@@ -1,6 +1,9 @@
 import Link from "next/link";
 import React, { useState } from "react";
-// import { NavLink } from "react-router-dom";
+
+//regular import gives warning (due to typescript)
+const styles = require("../styles/Header.module.css");
+
 import {
   Navbar,
   NavbarBrand,
@@ -8,12 +11,13 @@ import {
   Collapse,
   Nav,
   NavItem,
+  NavLink,
 } from "reactstrap";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
-    <Navbar dark color="primary" sticky="top" expand="md">
+    <Navbar light className={styles.nav} sticky="top" expand="md">
       <NavbarBrand className="ms-3" href="/">
         <h1 className="pt-2">Basic English Grammar</h1>
       </NavbarBrand>
@@ -21,17 +25,19 @@ const Header = () => {
       <Collapse isOpen={menuOpen} navbar>
         <Nav navbar>
           <NavItem>
-            <Link className="color-warning" href={"/"}>
-              Home
+            <Link passHref href={"/"}>
+              <NavLink>Home</NavLink>
             </Link>
           </NavItem>
           <NavItem>
-            <Link href={"/vocabulary"}>Vocabulary</Link>
+            <Link passHref href={"/vocabulary"}>
+              <NavLink>Vocabulary</NavLink>
+            </Link>
           </NavItem>
           <NavItem>
-            {/* <NavLink className="nav-link" to="/grammar">
-              Grammar
-            </NavLink> */}
+            <Link passHref href={"/grammar"}>
+              <NavLink>Grammar</NavLink>
+            </Link>
           </NavItem>
         </Nav>
       </Collapse>

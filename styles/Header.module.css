@@ -1,0 +1,6 @@
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: #e3f2fd;
+}
