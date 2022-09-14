@@ -1,5 +1,6 @@
+import Link from "next/link";
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+// import { NavLink } from "react-router-dom";
 import {
   Navbar,
   NavbarBrand,
@@ -14,25 +15,23 @@ const Header = () => {
   return (
     <Navbar dark color="primary" sticky="top" expand="md">
       <NavbarBrand className="ms-3" href="/">
-        <h1 className="pt-2">Steve Moritani</h1>
+        <h1 className="pt-2">Basic English Grammar</h1>
       </NavbarBrand>
       <NavbarToggler onClick={() => setMenuOpen(!menuOpen)} />
       <Collapse isOpen={menuOpen} navbar>
         <Nav navbar>
           <NavItem>
-            <NavLink className="nav-link" to="/">
+            <Link className="color-warning" href={"/"}>
               Home
-            </NavLink>
+            </Link>
           </NavItem>
           <NavItem>
-            <NavLink className="nav-link" to="/vocabulary">
-              Vocabulary
-            </NavLink>
+            <Link href={"/vocabulary"}>Vocabulary</Link>
           </NavItem>
           <NavItem>
-            <NavLink className="nav-link" to="/grammar">
+            {/* <NavLink className="nav-link" to="/grammar">
               Grammar
-            </NavLink>
+            </NavLink> */}
           </NavItem>
         </Nav>
       </Collapse>
