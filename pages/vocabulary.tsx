@@ -1,7 +1,13 @@
 import React from "react";
 
+import UnitList from "../components/UnitList";
+
 const vocabulary = () => {
-  return <div>vocabulary</div>;
+  return (
+    <div>
+      <UnitList />
+    </div>
+  );
 };
 
 export default vocabulary;

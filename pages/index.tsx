@@ -8,6 +8,7 @@ import { useCollection } from "react-firebase-hooks/firestore";
 
 import { db } from "../utils/initAuth";
 import SignInScreen from "../components/FirebaseAuth";
+import VocabList from "../components/VocabList";
 
 const Home = () => {
   const [user, loading, error] = useAuthState(getAuth());
@@ -49,6 +50,7 @@ const Home = () => {
           <button onClick={handleClick}>Add</button>
         </Col>
       </Row>
+      <Row>{unit0 && <VocabList vocabData={unit0.docs} />}</Row>
     </Container>
   );
 };

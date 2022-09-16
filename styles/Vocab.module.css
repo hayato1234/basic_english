@@ -1,0 +1,19 @@
+.container {
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 1rem;
+  margin: 1rem;
+}
+
+.card {
+  margin: 10px;
+  cursor: pointer;
+}
+
+.container:hover,
+.container:focus,
+.container:active,
+.card:hover {
+  color: #0070f3;
+  border-color: #0070f3;
+}
