@@ -18,10 +18,11 @@ import {
 
 import { db } from "../utils/initAuth";
 import { Vocab } from "../types/vocabType";
+import Link from "next/link";
 
 const styles = require("../styles/Vocab.module.css");
 
-const unitTitles = [
+export const unitTitles = [
   "super_vocabs_0",
   "super_vocabs_1",
   "super_vocabs_2",
@@ -29,28 +30,26 @@ const unitTitles = [
   "super_vocabs_4",
   "super_vocabs_5",
 ];
-const unitNames = ["Unit 0", "Unit 1", "Unit 2", "Unit 3", "Unit 4", "Unit 5"];
+const units = [0, 1, 2, 3, 4, 5];
 
-const UnitTiles = ({ unitData, unitName }) => {
+const UnitTiles = ({ unitData, unitId }) => {
   const vocabs: Vocab[] = unitData.map(
     (vocabData: QueryDocumentSnapshot<DocumentData>) => vocabData.data()
   );
 
-  const unitSelected = (name) => {
-    console.log("clicked", name);
-  };
-
   return (
-    <Card onClick={() => unitSelected(unitName)} className={styles.card}>
-      <CardHeader>{unitName}</CardHeader>
-      <CardBody>
-        <CardTitle tag="p">Examples:</CardTitle>
-        <CardText className="ms-2">
-          {vocabs[Math.floor(Math.random() * vocabs.length)].word}
-        </CardText>
-        <CardText className="ms-2">{vocabs[1].word}</CardText>
-      </CardBody>
-    </Card>
+    <Link href="/vocabulary/[unit]" as={`/vocabulary/${unitId}`}>
+      <Card className={styles.card}>
+        <CardHeader>{`Unit ${unitId}`}</CardHeader>
+        <CardBody>
+          <CardTitle tag="p">Examples:</CardTitle>
+          <CardText className="ms-2">
+            {vocabs[Math.floor(Math.random() * vocabs.length)].word}
+          </CardText>
+          <CardText className="ms-2">{vocabs[1].word}</CardText>
+        </CardBody>
+      </Card>
+    </Link>
   );
 };
 
@@ -88,7 +87,7 @@ const UnitList = () => {
             {unit0loading ? (
               <h5>Loading</h5>
             ) : unit0 ? (
-              <UnitTiles unitData={unit0.docs} unitName="Unit 0" />
+              <UnitTiles unitData={unit0.docs} unitId={units[0]} />
             ) : (
               <h5>{`Error loading: ${unit0error}`}</h5>
             )}
@@ -97,7 +96,7 @@ const UnitList = () => {
             {unit1loading ? (
               <h5>Loading</h5>
             ) : unit1 ? (
-              <UnitTiles unitData={unit1.docs} unitName="Unit 1" />
+              <UnitTiles unitData={unit1.docs} unitId={units[1]} />
             ) : (
               <h5>{`Error loading: ${unit1error}`}</h5>
             )}
@@ -108,7 +107,7 @@ const UnitList = () => {
             {unit2loading ? (
               <h5>Loading</h5>
             ) : unit2 ? (
-              <UnitTiles unitData={unit2.docs} unitName="Unit 2" />
+              <UnitTiles unitData={unit2.docs} unitId={units[2]} />
             ) : (
               <h5>{`Error loading: ${unit2error}`}</h5>
             )}
@@ -117,7 +116,7 @@ const UnitList = () => {
             {unit3loading ? (
               <h5>Loading</h5>
             ) : unit3 ? (
-              <UnitTiles unitData={unit3.docs} unitName="Unit 3" />
+              <UnitTiles unitData={unit3.docs} unitId={units[3]} />
             ) : (
               <h5>{`Error loading: ${unit3error}`}</h5>
             )}
@@ -128,7 +127,7 @@ const UnitList = () => {
             {unit4loading ? (
               <h5>Loading</h5>
             ) : unit4 ? (
-              <UnitTiles unitData={unit4.docs} unitName="Unit 4" />
+              <UnitTiles unitData={unit4.docs} unitId={units[4]} />
             ) : (
               <h5>{`Error loading: ${unit4error}`}</h5>
             )}
@@ -137,7 +136,7 @@ const UnitList = () => {
             {unit5loading ? (
               <h5>Loading</h5>
             ) : unit5 ? (
-              <UnitTiles unitData={unit5.docs} unitName="Unit 5" />
+              <UnitTiles unitData={unit5.docs} unitId={units[5]} />
             ) : (
               <h5>{`Error loading: ${unit5error}`}</h5>
             )}
