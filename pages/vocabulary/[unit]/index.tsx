@@ -1,7 +1,7 @@
 import React from "react";
 import { useRouter } from "next/router";
-import { useCollection } from "react-firebase-hooks/firestore";
-import { collection } from "firebase/firestore";
+import { useCollection, useDocument } from "react-firebase-hooks/firestore";
+import { collection, doc, getDoc, query } from "firebase/firestore";
 
 import { db } from "../../../utils/initAuth";
 import { _UNITS_DB } from "../../../components/UnitList";
@@ -11,8 +11,8 @@ const unitDetail = () => {
   const router = useRouter();
   const { unit } = router.query;
   const unitId = unit ? +unit : 0;
-  const [vocab, vocabLoading, vocabError] = useCollection(
-    collection(db, _UNITS_DB),
+  const [vocab, vocabLoading, vocabError] = useDocument(
+    doc(db, _UNITS_DB, `unit${unitId}`),
     {}
   );
   return (
@@ -20,7 +20,7 @@ const unitDetail = () => {
       {vocabLoading ? (
         <h1>Loading...</h1>
       ) : vocab ? (
-        <VocabList unitData={vocab.docs[unitId]} />
+        <VocabList unitData={vocab} />
       ) : (
         <h1>{vocabError?.message}</h1>
       )}

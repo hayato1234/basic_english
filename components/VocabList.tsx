@@ -14,7 +14,7 @@ const VocabList = ({ unitData }) => {
     <div>
       {vocabs.map((vocab) => {
         return (
-          <div key={vocab.id} className={styles.container}>
+          <div key={vocab.num} className={styles.container}>
             <h5>{`${vocab.num} : ${vocab.en}`}</h5>
           </div>
         );
