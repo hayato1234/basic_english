@@ -1,14 +1,10 @@
 import React from "react";
 import { useRouter } from "next/router";
 import { useCollection } from "react-firebase-hooks/firestore";
-import {
-  collection,
-  QueryDocumentSnapshot,
-  DocumentData,
-} from "firebase/firestore";
+import { collection } from "firebase/firestore";
 
 import { db } from "../../../utils/initAuth";
-import { unitTitles } from "../../../components/UnitList";
+import { _UNITS_DB } from "../../../components/UnitList";
 import VocabList from "../../../components/VocabList";
 
 const unitDetail = () => {
@@ -16,7 +12,7 @@ const unitDetail = () => {
   const { unit } = router.query;
   const unitId = unit ? +unit : 0;
   const [vocab, vocabLoading, vocabError] = useCollection(
-    collection(db, unitTitles[+unitId]),
+    collection(db, _UNITS_DB),
     {}
   );
   return (
@@ -24,7 +20,7 @@ const unitDetail = () => {
       {vocabLoading ? (
         <h1>Loading...</h1>
       ) : vocab ? (
-        <VocabList vocabData={vocab.docs} />
+        <VocabList unitData={vocab.docs[unitId]} />
       ) : (
         <h1>{vocabError?.message}</h1>
       )}

@@ -1,9 +1,9 @@
 export interface Vocab {
   id: number;
   unit: number;
-  number: number;
+  num: number;
   parts: string;
-  word: string;
+  en: string;
   noun: string;
   tverb: string;
   itverb: string;
