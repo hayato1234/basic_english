@@ -21,6 +21,7 @@
 .list {
   border: 1px solid brown;
   max-height: 600px;
+  max-width: 800px;
   background-color: white;
   scroll-behavior: auto;
   overflow-y: auto;
@@ -30,6 +31,20 @@
   color: red;
 }
 
+/* -------- unit -------- */
+
+.flashcard {
+  margin-right: 1px;
+  margin-left: 1px;
+  border: 1px solid black;
+  height: 250px;
+  max-width: 400px;
+  display: grid;
+  align-items: center;
+  justify-content: center;
+}
+
+/* -------- detail -------- */
 .word {
   padding-top: 2rem;
   justify-content: center;

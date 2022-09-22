@@ -1,6 +1,6 @@
 .container {
   padding: 0 2rem;
   justify-content: flex-start;
-  height: 1000px;
+  height: 1500px;
   background-image: url("/assets/images/bg-home.jpg");
 }

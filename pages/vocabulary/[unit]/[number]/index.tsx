@@ -31,7 +31,7 @@ export const partsList = [
   "conn",
 ];
 
-const Meanings = ({ vocabData, vocabId, unitId }) => {
+export const ShowVocabDetail = ({ vocabData, vocabId, unitId }) => {
   const vocab = vocabData.list.filter((v: Vocab) => v.num == vocabId)[0];
   const firstVocabId = vocabData.list[0].num;
   const lastVocabId = vocabData.list.at(-1).num;
@@ -134,7 +134,7 @@ const VocabDetail = () => {
       {vocabLoading ? (
         <h5>Loading...</h5>
       ) : vocabData ? (
-        <Meanings
+        <ShowVocabDetail
           vocabData={vocabData.data()}
           vocabId={vocabId}
           unitId={unitId}
