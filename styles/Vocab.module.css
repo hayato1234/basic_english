@@ -19,7 +19,7 @@
 }
 
 .list {
-  border: 5px solid brown;
+  border: 1px solid brown;
   max-height: 600px;
   background-color: white;
   scroll-behavior: auto;
@@ -28,4 +28,19 @@
 
 .list span {
   color: red;
+}
+
+.word {
+  padding-top: 2rem;
+  justify-content: center;
+}
+
+.meaningRow {
+  justify-content: center;
+}
+
+.meaningCol {
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black;
 }

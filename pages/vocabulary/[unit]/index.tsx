@@ -20,7 +20,10 @@ const unitDetail = () => {
       {vocabLoading ? (
         <h1>Loading...</h1>
       ) : vocab ? (
-        <VocabList unitData={vocab} unitId={unitId} />
+        <>
+          <h1>{`Unit ${unitId}`}</h1>
+          <VocabList unitData={vocab} unitId={unitId} />
+        </>
       ) : (
         <h1>{vocabError?.message}</h1>
       )}

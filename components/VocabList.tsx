@@ -6,20 +6,16 @@ import Link from "next/link";
 const styles = require("../styles/Vocab.module.css");
 
 const VocabList = ({ unitData, unitId }) => {
-  // const vocabs: Vocab[] = vocabData
-  //   .map((vocabData: QueryDocumentSnapshot<DocumentData>) => vocabData.data())
-  //   .sort((a: Vocab, b: Vocab) => a.number - b.number);
   const vocabs: Vocab[] = unitData.data().list;
 
   return (
     <div className={styles.list}>
-      <h2>単語リスト</h2>
+      <h2 className="m-2">単語リスト</h2>
       {vocabs.map((vocab) => {
         return (
           <Link
             href={{
               pathname: "/vocabulary/[unit]/[number]",
-              query: { vocabData: JSON.stringify(vocab) },
             }}
             as={`/vocabulary/${unitId}/${vocab.num}`}
             key={vocab.num}
