@@ -8,7 +8,9 @@ import { _UNITS_DB } from "../../../components/UnitList";
 import VocabList from "../../../components/VocabList";
 import FlashCards from "../../../components/FlashCards";
 import Link from "next/link";
-import { Container } from "reactstrap";
+import { Button, Container } from "reactstrap";
+
+import { Modes } from "./quiz";
 
 const unitDetail = () => {
   const router = useRouter();
@@ -35,7 +37,14 @@ const unitDetail = () => {
 
           <hr />
           <h2>Study Modes</h2>
-          <h3>4択クイズ</h3>
+          <Link
+            href={{
+              pathname: "vocabulary/quiz",
+              query: { unitId: unitId, mode: Modes.Multiple },
+            }}
+          >
+            <Button>4択クイズ</Button>
+          </Link>
           <hr />
           <VocabList unitData={vocab} unitId={unitId} />
         </>

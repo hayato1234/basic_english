@@ -26,23 +26,36 @@ export const _UNITS_DB = "unit_data";
 const units = [0, 1, 2, 3, 4, 5];
 
 const UnitTiles = ({ unitData, unitId }) => {
-  const vocabs: Vocab[] = unitData.data().list;
+  const vocabs: Vocab[] = unitData ? unitData.data().list : null;
 
   return (
-    <Link href="/vocabulary/[unit]" as={`/vocabulary/${unitId}`} passHref>
-      <Card className={styles.card}>
-        <CardHeader>{`Unit ${unitId}`}</CardHeader>
-        <CardBody>
-          <CardTitle tag="p">Examples:</CardTitle>
-          <CardText className="ms-2">
-            {vocabs[Math.floor(Math.random() * vocabs.length)].en}
-          </CardText>
-          <CardText className="ms-2">
-            {vocabs[Math.floor(Math.random() * vocabs.length)].en}
-          </CardText>
-        </CardBody>
-      </Card>
-    </Link>
+    <>
+      {vocabs ? (
+        <Link href="/vocabulary/[unit]" as={`/vocabulary/${unitId}`} passHref>
+          <Card className={styles.card}>
+            <CardHeader>{`Unit ${unitId}`}</CardHeader>
+            <CardBody>
+              <CardTitle tag="p">Examples:</CardTitle>
+              <CardText className="ms-2">
+                {vocabs[Math.floor(Math.random() * vocabs.length)].en}
+              </CardText>
+              <CardText className="ms-2">
+                {vocabs[Math.floor(Math.random() * vocabs.length)].en}
+              </CardText>
+            </CardBody>
+          </Card>
+        </Link>
+      ) : (
+        <>
+          <Card className={styles.card}>
+            <CardHeader>{`${unitId}`}</CardHeader>
+            <CardBody>
+              <CardTitle tag="p">昨日準備中</CardTitle>
+            </CardBody>
+          </Card>
+        </>
+      )}
+    </>
   );
 };
 
@@ -114,6 +127,11 @@ const UnitList = () => {
             ) : (
               <></>
             )}
+          </Col>
+        </Row>
+        <Row>
+          <Col md={6}>
+            <UnitTiles unitData={null} unitId={"単語を追加"} />
           </Col>
         </Row>
       </Container>
