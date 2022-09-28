@@ -3,13 +3,25 @@ import { Button, Col, Input, Row } from "reactstrap";
 import Switch from "@mui/material/Switch";
 import { Vocab } from "../types/vocabType";
 
-import { partsList, partsToJPN } from "../pages/vocabulary/[unit]/[number]";
 import { FormControlLabel } from "@mui/material";
 import { shuffle } from "../utils/arraySort";
+import Link from "next/link";
+import { _partsList, _partsToJPN } from "../utils/staticValues";
 
 const styles = require("../styles/Vocab.module.css");
 
 const FlashCards = ({ unitData }) => {
+  if (!unitData) {
+    return (
+      <>
+        <h1>Error</h1>
+        <Link href="/">
+          <button>Reload</button>
+        </Link>
+      </>
+    );
+  }
+
   const [vocabs, setVocabs] = useState(unitData.data().list);
 
   const [leftIndex, setLeftIndex] = useState(0);
@@ -23,14 +35,14 @@ const FlashCards = ({ unitData }) => {
     else vocabs.sort((a: Vocab, b: Vocab) => a.num - b.num);
   };
 
-  const meaning = partsList.map((part) => {
+  const meaning = _partsList.map((part) => {
     const vocab = vocabs[leftIndex - 1];
     if (vocab) {
       return (
         vocab[part] && (
           <Row key={part}>
             <Col>
-              <p>{`${partsToJPN[part]} : ${vocab[part]}`}</p>
+              <p>{`${_partsToJPN[part]} : ${vocab[part]}`}</p>
             </Col>
           </Row>
         )

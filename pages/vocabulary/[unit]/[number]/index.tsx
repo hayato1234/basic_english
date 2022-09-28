@@ -6,30 +6,16 @@ import { useDocument } from "react-firebase-hooks/firestore";
 import { doc } from "firebase/firestore";
 
 import { db } from "../../../../utils/initAuth";
-import { _UNITS_DB } from "../../../../components/UnitList";
+
 import { Col, Container, Row } from "reactstrap";
 import ReportIssue from "../../../../components/ReportIssue";
+import {
+  _partsList,
+  _partsToJPN,
+  _UNITS_DB,
+} from "../../../../utils/staticValues";
 
 const styles = require("../../../../styles/Vocab.module.css");
-
-export const partsToJPN = {
-  noun: "名詞",
-  tverb: "他動詞",
-  itverb: "自動詞",
-  adj: "形容詞",
-  adv: "副詞",
-  prep: "前置詞",
-  conn: "接続詞",
-};
-export const partsList = [
-  "noun",
-  "tverb",
-  "itverb",
-  "adj",
-  "adv",
-  "prep",
-  "conn",
-];
 
 export const ShowVocabDetail = ({ vocabData, vocabId, unitId }) => {
   const vocab = vocabData.list.filter((v: Vocab) => v.num == vocabId)[0];
@@ -59,12 +45,12 @@ export const ShowVocabDetail = ({ vocabData, vocabId, unitId }) => {
           </Col>
         </Row>
 
-        {partsList.map((part) => {
+        {_partsList.map((part) => {
           return (
             vocab[part] && (
               <Row key={part} className={styles.meaningRow}>
                 <Col xs={6} className={styles.meaningCol}>
-                  <p>{`${partsToJPN[part]} : ${vocab[part]}`}</p>
+                  <p>{`${_partsToJPN[part]} : ${vocab[part]}`}</p>
                 </Col>
               </Row>
             )

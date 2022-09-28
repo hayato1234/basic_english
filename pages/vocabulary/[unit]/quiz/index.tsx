@@ -7,9 +7,9 @@ export enum Modes {
   Multiple,
 }
 
-const ReturnMode = ({ mode }) => {
+const ReturnMode = ({ mode, unitId }) => {
   if (+mode === Modes.Multiple) {
-    return <MultQ />;
+    return <MultQ unitId={unitId} />;
   }
   return <></>;
 };
@@ -21,7 +21,8 @@ const Quiz = () => {
   return (
     <Container>
       <h1>Unit {unitId} - 選択クイズ</h1>
-      <ReturnMode mode={mode} />
+      <hr />
+      <ReturnMode mode={mode} unitId={unitId} />
     </Container>
   );
 };

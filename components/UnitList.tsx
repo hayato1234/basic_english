@@ -10,20 +10,14 @@ import {
   Row,
 } from "reactstrap";
 import { useCollection } from "react-firebase-hooks/firestore";
-import {
-  collection,
-  QueryDocumentSnapshot,
-  DocumentData,
-} from "firebase/firestore";
+import { collection } from "firebase/firestore";
 
 import { db } from "../utils/initAuth";
 import { Vocab } from "../types/vocabType";
 import Link from "next/link";
+import { _units, _UNITS_DB } from "../utils/staticValues";
 
 const styles = require("../styles/Vocab.module.css");
-
-export const _UNITS_DB = "unit_data";
-const units = [0, 1, 2, 3, 4, 5];
 
 const UnitTiles = ({ unitData, unitId }) => {
   const vocabs: Vocab[] = unitData ? unitData.data().list : null;
@@ -50,7 +44,7 @@ const UnitTiles = ({ unitData, unitId }) => {
           <Card className={styles.card}>
             <CardHeader>{`${unitId}`}</CardHeader>
             <CardBody>
-              <CardTitle tag="p">昨日準備中</CardTitle>
+              <CardTitle tag="p">機能準備中</CardTitle>
             </CardBody>
           </Card>
         </>
@@ -64,7 +58,6 @@ const UnitList = () => {
     collection(db, _UNITS_DB),
     {}
   );
-  const ref = React.createRef();
 
   return (
     <div>
@@ -74,7 +67,7 @@ const UnitList = () => {
             {unitsDataLoading ? (
               <h5>Loading...</h5>
             ) : unitsData ? (
-              <UnitTiles unitData={unitsData.docs[0]} unitId={units[0]} />
+              <UnitTiles unitData={unitsData.docs[0]} unitId={_units[0]} />
             ) : (
               <h5>{`Error loading: ${unitsDataError}`}</h5>
             )}
@@ -83,7 +76,7 @@ const UnitList = () => {
             {unitsDataLoading ? (
               <></>
             ) : unitsData ? (
-              <UnitTiles unitData={unitsData.docs[1]} unitId={units[1]} />
+              <UnitTiles unitData={unitsData.docs[1]} unitId={_units[1]} />
             ) : (
               <></>
             )}
@@ -94,7 +87,7 @@ const UnitList = () => {
             {unitsDataLoading ? (
               <></>
             ) : unitsData ? (
-              <UnitTiles unitData={unitsData.docs[2]} unitId={units[2]} />
+              <UnitTiles unitData={unitsData.docs[2]} unitId={_units[2]} />
             ) : (
               <></>
             )}
@@ -103,7 +96,7 @@ const UnitList = () => {
             {unitsDataLoading ? (
               <></>
             ) : unitsData ? (
-              <UnitTiles unitData={unitsData.docs[3]} unitId={units[3]} />
+              <UnitTiles unitData={unitsData.docs[3]} unitId={_units[3]} />
             ) : (
               <></>
             )}
@@ -114,7 +107,7 @@ const UnitList = () => {
             {unitsDataLoading ? (
               <></>
             ) : unitsData ? (
-              <UnitTiles unitData={unitsData.docs[4]} unitId={units[4]} />
+              <UnitTiles unitData={unitsData.docs[4]} unitId={_units[4]} />
             ) : (
               <></>
             )}
@@ -123,7 +116,7 @@ const UnitList = () => {
             {unitsDataLoading ? (
               <></>
             ) : unitsData ? (
-              <UnitTiles unitData={unitsData.docs[5]} unitId={units[5]} />
+              <UnitTiles unitData={unitsData.docs[5]} unitId={_units[5]} />
             ) : (
               <></>
             )}

@@ -13,3 +13,9 @@ export interface Vocab {
   conn: string;
   sentence: string;
 }
+
+export type Choice = {
+  part: string;
+  meaning: string;
+  correct: boolean;
+};

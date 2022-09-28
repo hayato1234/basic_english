@@ -4,18 +4,16 @@ import { useCollection, useDocument } from "react-firebase-hooks/firestore";
 import { collection, doc, getDoc, query } from "firebase/firestore";
 
 import { db } from "../../../utils/initAuth";
-import { _UNITS_DB } from "../../../components/UnitList";
+
 import VocabList from "../../../components/VocabList";
 import FlashCards from "../../../components/FlashCards";
 import Link from "next/link";
 import { Button, Container } from "reactstrap";
 
 import { Modes } from "./quiz";
+import { _units, _UNITS_DB } from "../../../utils/staticValues";
 
-const unitDetail = () => {
-  const router = useRouter();
-  const { unit } = router.query;
-  const unitId = unit ? +unit : 0;
+const RenderDetail = ({ unitId }) => {
   const [vocab, vocabLoading, vocabError] = useDocument(
     doc(db, _UNITS_DB, `unit${unitId}`),
     {}
@@ -52,6 +50,27 @@ const unitDetail = () => {
         <h1>{vocabError?.message}</h1>
       )}
     </Container>
+  );
+};
+
+const unitDetail = () => {
+  const router = useRouter();
+  const { unit } = router.query;
+  const unitId = unit ? +unit : 0;
+
+  return (
+    <>
+      {unitId < 0 || unitId > _units.length - 1 ? (
+        <>
+          <Link href="/vocabulary">
+            <i className="fa fa-arrow-left" aria-hidden="true" />
+          </Link>
+          <p>{`Error: Unit ${unitId} doesn't exist`}</p>
+        </>
+      ) : (
+        <RenderDetail unitId={unitId} />
+      )}
+    </>
   );
 };
 
