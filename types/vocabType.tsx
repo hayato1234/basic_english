@@ -19,3 +19,9 @@ export type Choice = {
   meaning: string;
   correct: boolean;
 };
+
+export type QuestionData = {
+  userChoice: string;
+  choices: Choice[];
+  gotCorrect: boolean;
+};

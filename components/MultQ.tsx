@@ -2,118 +2,144 @@ import { doc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useDocument } from "react-firebase-hooks/firestore";
 import { Button, List } from "reactstrap";
-import { Choice, Vocab } from "../types/vocabType";
+import { Choice, QuestionData, Vocab } from "../types/vocabType";
 import { shuffle } from "../utils/arraySort";
-import { getMeaningsForOne, getOneMeaningForOne } from "../utils/getMeaning";
+import { getOneMeaningForOne } from "../utils/getMeaning";
 import { db } from "../utils/initAuth";
-import { _partsToJPN, _UNITS_DB } from "../utils/staticValues";
+import { _partsToJPN, _units, _UNITS_DB } from "../utils/staticValues";
+import ErrorMessage from "./ErrorMessage";
 
 const RenderQuiz = ({ vocabsData }) => {
+  if (vocabsData === undefined)
+    return (
+      <ErrorMessage message="unexpected error happened" backURL="/vocabulary" />
+    );
+
   const vocabs: Vocab[] = vocabsData.data().list;
+
+  if (vocabs === undefined)
+    return <ErrorMessage message="error loading" backURL="/vocabulary" />;
+
   const [numOfChoices, setNumOfChoices] = useState(4);
-  if (vocabs) {
-    const [currentId, setCurrentId] = useState(0);
-    const [currentVocab, setVocab] = useState(vocabs[currentId]);
-    const [userChoices, setUserChoices] = useState<
-      { userChoice: string; choices: Choice[]; gotCorrect: boolean }[]
-    >([]);
-    const [choices, setChoices] = useState<Choice[]>([]);
-    const [showAnswer, setShowAnswer] = useState(false);
+  const [numOfQs, setNumOfQs] = useState(20);
+  const [currentId, setCurrentId] = useState(0);
+  const [currentVocab, setVocab] = useState(vocabs[currentId]);
+  const [userChoices, setUserChoices] = useState<QuestionData[]>([]);
+  const [choices, setChoices] = useState<Choice[]>([]);
+  const [showAnswer, setShowAnswer] = useState(false);
 
-    useEffect(() => setChoices(getChoices()), []);
+  useEffect(() => setChoices(getChoices()), [currentId]);
 
-    const goNext = () => {
-      setCurrentId(currentId + 1);
-      setVocab(vocabs[currentId + 1]);
-      setShowAnswer(false);
-    };
+  const goNext = () => {
+    setCurrentId(currentId + 1);
+    setVocab(vocabs[currentId + 1]);
+    setShowAnswer(false);
+  };
 
-    const checkAnswer = (
-      event: React.MouseEvent<HTMLButtonElement>,
-      userChoice: string
-    ) => {
-      event.preventDefault();
-      let isCorrect = false;
-      if (userChoice === choices.find((c) => c.correct === true)?.meaning)
-        isCorrect = true;
-      setUserChoices([
-        ...userChoices,
-        { userChoice: userChoice, choices: choices, gotCorrect: isCorrect },
-      ]);
-      console.log({
-        userChoice: userChoice,
-        choices: choices,
-        gotCorrect: isCorrect,
-      });
-      setShowAnswer(true);
-    };
+  const checkAnswer = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    userChoice: string
+  ) => {
+    event.preventDefault();
+    let isCorrect = false;
 
-    const getChoices = () => {
-      const choices: { part: string; meaning: string; correct: boolean }[] = [];
+    //checking if user's got correct
+    if (userChoice === choices.find((c) => c.correct === true)?.meaning)
+      isCorrect = true;
 
-      choices.push({
-        ...getOneMeaningForOne(currentVocab),
-        correct: true,
-      });
-      for (let i = 0; i < numOfChoices - 1; i++) {
-        const choice = {
+    //record the question data
+    setUserChoices([
+      ...userChoices,
+      { userChoice: userChoice, choices: choices, gotCorrect: isCorrect },
+    ]);
+
+    console.log({
+      userChoice: userChoice,
+      choices: choices,
+      gotCorrect: isCorrect,
+    });
+
+    setShowAnswer(true);
+  };
+
+  const getChoices = () => {
+    const choices: { part: string; meaning: string; correct: boolean }[] = [];
+
+    choices.push({
+      ...getOneMeaningForOne(currentVocab),
+      correct: true,
+    });
+    for (let i = 0; i < numOfChoices - 1; i++) {
+      const choice = {
+        ...getOneMeaningForOne(
+          vocabs[Math.floor(Math.random() * vocabs.length)]
+        ),
+        correct: false,
+      };
+      console.log("choice meaning", choice.meaning);
+      console.log(
+        "find",
+        choices.find((c) => c.meaning === choice.meaning)
+      );
+      console.log("choices", choices);
+      if (!choices.find((c) => c.meaning === choice.meaning)) {
+        //meaning no duplicate in choices
+        choices.push({
           ...getOneMeaningForOne(
             vocabs[Math.floor(Math.random() * vocabs.length)]
           ),
           correct: false,
-        };
-        if (!choices.find((c) => c.meaning === choice.meaning)) {
-          //meaning no duplicate in choices
-          choices.push({
-            ...getOneMeaningForOne(
-              vocabs[Math.floor(Math.random() * vocabs.length)]
-            ),
-            correct: false,
-          });
-        } else {
-          //meaning the choice already exist
-          --i;
-        }
+        });
+      } else {
+        //meaning the choice already exist
+        --i;
       }
+    }
 
-      //shuffle choices order, and add "I don't know" choice at the last
-      return [
-        ...shuffle(choices),
-        { part: "", meaning: "わからない", correct: false },
-      ];
-    };
+    //shuffle choices order, and add "I don't know" choice at the last
+    return [
+      ...shuffle(choices),
+      { part: "", meaning: "わからない", correct: false },
+    ];
+  };
 
-    return (
-      <>
-        <h1>{currentVocab.en}</h1>
-        <List type="unstyled">
-          {choices.map((meaning) => (
-            <li key={meaning.meaning} className="m-2">
-              {showAnswer && meaning.correct && <span>-</span>}
-              {showAnswer && !meaning.correct && <span>+</span>}
-              <Button
-                color={
-                  showAnswer
-                    ? meaning.correct
-                      ? "success"
-                      : "danger"
-                    : "primary"
-                }
-                outline
-                disabled={showAnswer}
-                onClick={(e) => checkAnswer(e, meaning.meaning)}
-              >{`${meaning.meaning} : ${meaning.correct}`}</Button>
-            </li>
-          ))}
-        </List>
-        {showAnswer && <Button onClick={goNext}>Next</Button>}
-      </>
-    );
-  }
-  return <></>;
+  return (
+    <>
+      <p>{`${currentId + 1} / ${numOfQs}`}</p>
+      <h1>{currentVocab.en}</h1>
+      <List type="unstyled">
+        {choices.map((meaning) => (
+          <li key={meaning.meaning} className="m-2">
+            <Button
+              color={
+                showAnswer //color green if correct, gray if incorrect, red if incorrect && user selected
+                  ? meaning.correct
+                    ? "success"
+                    : userChoices.at(-1)?.userChoice === meaning.meaning
+                    ? "danger"
+                    : "second"
+                  : "primary"
+              }
+              outline
+              disabled={showAnswer}
+              onClick={(e) => checkAnswer(e, meaning.meaning)}
+            >
+              {showAnswer && meaning.correct && <span>o</span>}
+              {showAnswer && !meaning.correct && <span>x</span>}
+              {` ${meaning.meaning}`}
+            </Button>
+          </li>
+        ))}
+      </List>
+      {showAnswer && <Button onClick={goNext}>Next</Button>}
+    </>
+  );
 };
 
 const MultQ = ({ unitId }) => {
+  if (unitId < 0 || unitId > _units.length - 1) {
+    return <p>{`${unitId} doesn't exist`}</p>;
+  }
   const [vocabsData, vocabLoading, vocabError] = useDocument(
     doc(db, _UNITS_DB, `unit${unitId}`),
     {}
