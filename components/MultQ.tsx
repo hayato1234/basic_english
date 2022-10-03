@@ -1,7 +1,16 @@
 import { doc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useDocument } from "react-firebase-hooks/firestore";
-import { Button, List } from "reactstrap";
+import {
+  Button,
+  Col,
+  List,
+  ListGroup,
+  ListGroupItem,
+  Modal,
+  ModalBody,
+  ModalHeader,
+} from "reactstrap";
 import { Choice, QuestionData, Vocab } from "../types/vocabType";
 import { shuffle } from "../utils/arraySort";
 import { getOneMeaningForOne } from "../utils/getMeaning";
@@ -27,6 +36,8 @@ const RenderQuiz = ({ vocabsData }) => {
   const [userChoices, setUserChoices] = useState<QuestionData[]>([]);
   const [choices, setChoices] = useState<Choice[]>([]);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [showNext, setShowNext] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => setChoices(getChoices()), [currentId]);
 
@@ -34,6 +45,11 @@ const RenderQuiz = ({ vocabsData }) => {
     setCurrentId(currentId + 1);
     setVocab(vocabs[currentId + 1]);
     setShowAnswer(false);
+    setShowNext(false);
+  };
+
+  const finish = () => {
+    toggleModal();
   };
 
   const checkAnswer = (
@@ -41,31 +57,43 @@ const RenderQuiz = ({ vocabsData }) => {
     userChoice: string
   ) => {
     event.preventDefault();
-    let isCorrect = false;
+    const answer = choices.find((c) => c.correct === true);
+    if (answer) {
+      let isCorrect = false;
 
-    //checking if user's got correct
-    if (userChoice === choices.find((c) => c.correct === true)?.meaning)
-      isCorrect = true;
+      //- checking if user's got correct
+      if (userChoice === answer.meaning) isCorrect = true;
 
-    //record the question data
-    setUserChoices([
-      ...userChoices,
-      { userChoice: userChoice, choices: choices, gotCorrect: isCorrect },
-    ]);
+      //- record the question data
+      setUserChoices([
+        ...userChoices,
+        {
+          quesNum: currentId,
+          question: currentVocab.en,
+          answer: answer.meaning,
+          userChoice: userChoice,
+          choices: choices,
+          gotCorrect: isCorrect,
+        },
+      ]);
 
-    console.log({
-      userChoice: userChoice,
-      choices: choices,
-      gotCorrect: isCorrect,
-    });
+      console.log({
+        userChoice: userChoice,
+        choices: choices,
+        gotCorrect: isCorrect,
+      });
+    }
 
     setShowAnswer(true);
+    // - show the next button if less than numOfQs
+    if (!(currentId + 1 >= numOfQs)) setShowNext(true);
   };
 
   const getChoices = () => {
-    const choices: { part: string; meaning: string; correct: boolean }[] = [];
+    const newChoices: { part: string; meaning: string; correct: boolean }[] =
+      [];
 
-    choices.push({
+    newChoices.push({
       ...getOneMeaningForOne(currentVocab),
       correct: true,
     });
@@ -76,31 +104,35 @@ const RenderQuiz = ({ vocabsData }) => {
         ),
         correct: false,
       };
-      console.log("choice meaning", choice.meaning);
-      console.log(
-        "find",
-        choices.find((c) => c.meaning === choice.meaning)
-      );
-      console.log("choices", choices);
-      if (!choices.find((c) => c.meaning === choice.meaning)) {
-        //meaning no duplicate in choices
-        choices.push({
+      // console.log("choice meaning", choice.meaning);
+      // console.log(
+      //   "find",
+      //   newChoices.find((c) => c.meaning === choice.meaning)
+      // );
+      // console.log("choices", newChoices);
+      if (!newChoices.find((c) => c.meaning === choice.meaning)) {
+        //- meaning no duplicate in choices
+        newChoices.push({
           ...getOneMeaningForOne(
             vocabs[Math.floor(Math.random() * vocabs.length)]
           ),
           correct: false,
         });
       } else {
-        //meaning the choice already exist
+        //- meaning the choice already exist
         --i;
       }
     }
 
-    //shuffle choices order, and add "I don't know" choice at the last
+    //- shuffle choices order, and add "I don't know" choice at the last
     return [
-      ...shuffle(choices),
+      ...shuffle(newChoices),
       { part: "", meaning: "わからない", correct: false },
     ];
+  };
+
+  const toggleModal = () => {
+    setModalOpen(!isModalOpen);
   };
 
   return (
@@ -112,7 +144,7 @@ const RenderQuiz = ({ vocabsData }) => {
           <li key={meaning.meaning} className="m-2">
             <Button
               color={
-                showAnswer //color green if correct, gray if incorrect, red if incorrect && user selected
+                showAnswer //- color green if correct, gray if incorrect, red if incorrect && user selected
                   ? meaning.correct
                     ? "success"
                     : userChoices.at(-1)?.userChoice === meaning.meaning
@@ -131,7 +163,52 @@ const RenderQuiz = ({ vocabsData }) => {
           </li>
         ))}
       </List>
-      {showAnswer && <Button onClick={goNext}>Next</Button>}
+      {showNext && <Button onClick={goNext}>Next</Button>}
+      <Button onClick={finish}>Finish</Button>
+
+      {/* ------------ result Modal ------------------- */}
+      <Modal isOpen={isModalOpen} toggle={toggleModal}>
+        <ModalHeader toggle={toggleModal}>Your result</ModalHeader>
+        <ModalBody>
+          <p>{`Score : ${userChoices.reduce((a, c) => {
+            return c.gotCorrect ? a + 1 : a;
+          }, 0)} / ${userChoices.length}`}</p>
+          <ListGroup>
+            {userChoices.map((c) => {
+              return (
+                <ListGroupItem key={c.quesNum}>
+                  <h6 style={{ color: c.gotCorrect ? "black" : "red" }}>{`#${
+                    c.quesNum + 1
+                  }. ${c.question}`}</h6>
+                  <p>
+                    {c.gotCorrect ? (
+                      <div style={{ color: "green" }}>
+                        <i
+                          className="fa fa-check-circle-o"
+                          aria-hidden="true"
+                        />{" "}
+                        {c.userChoice}
+                      </div>
+                    ) : (
+                      <>
+                        <div style={{ color: "red" }}>
+                          <i
+                            className="fa fa-times-circle-o"
+                            aria-hidden="true"
+                          />{" "}
+                          <del>{c.userChoice}</del>
+                        </div>
+                        <div style={{ color: "green" }}>{c.answer}</div>
+                      </>
+                    )}
+                  </p>
+                </ListGroupItem>
+              );
+            })}
+          </ListGroup>
+        </ModalBody>
+      </Modal>
+      {/* ------------ result Modal ------------------- */}
     </>
   );
 };

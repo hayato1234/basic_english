@@ -21,6 +21,9 @@ export type Choice = {
 };
 
 export type QuestionData = {
+  quesNum: number;
+  question: string;
+  answer: string;
   userChoice: string;
   choices: Choice[];
   gotCorrect: boolean;
