@@ -10,6 +10,7 @@ import {
   ListGroupItem,
   Modal,
   ModalBody,
+  ModalFooter,
   ModalHeader,
   Row,
 } from "reactstrap";
@@ -26,9 +27,9 @@ const RenderQuiz = ({ vocabsData, inOrder }) => {
       <ErrorMessage message="unexpected error happened" backURL="/vocabulary" />
     );
 
-  let vocabs = inOrder
-    ? vocabsData.data().list
-    : shuffle(vocabsData.data().list);
+  const [vocabs, setVocabs] = useState(
+    inOrder ? vocabsData.data().list : shuffle(vocabsData.data().list)
+  );
 
   if (vocabs === undefined)
     return <ErrorMessage message="error loading" backURL="/vocabulary" />;
@@ -54,6 +55,15 @@ const RenderQuiz = ({ vocabsData, inOrder }) => {
   };
 
   const finish = () => {
+    toggleModal();
+  };
+
+  const retry = () => {
+    setVocabs(shuffle(vocabs));
+    setCurrentId(0);
+    setShowAnswer(false);
+    setShowNext(false);
+    setUserChoices([]);
     toggleModal();
   };
 
@@ -110,12 +120,7 @@ const RenderQuiz = ({ vocabsData, inOrder }) => {
         ),
         correct: false,
       };
-      // console.log("choice meaning", choice.meaning);
-      // console.log(
-      //   "find",
-      //   newChoices.find((c) => c.meaning === choice.meaning)
-      // );
-      // console.log("choices", newChoices);
+
       if (!newChoices.find((c) => c.meaning === choiceWrong.meaning)) {
         //- meaning no duplicate in choices
         newChoices.push(choiceWrong);
@@ -208,6 +213,14 @@ const RenderQuiz = ({ vocabsData, inOrder }) => {
             })}
           </ListGroup>
         </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={retry}>
+            Try Again
+          </Button>{" "}
+          <Button color="secondary" onClick={toggleModal}>
+            Cancel
+          </Button>
+        </ModalFooter>
       </Modal>
       {/* ------------ result Modal ------------------- */}
     </>
