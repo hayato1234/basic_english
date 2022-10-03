@@ -1,3 +1,4 @@
+import { FormControlLabel, Switch } from "@mui/material";
 import { doc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useDocument } from "react-firebase-hooks/firestore";
@@ -10,6 +11,7 @@ import {
   Modal,
   ModalBody,
   ModalHeader,
+  Row,
 } from "reactstrap";
 import { Choice, QuestionData, Vocab } from "../types/vocabType";
 import { shuffle } from "../utils/arraySort";
@@ -18,23 +20,26 @@ import { db } from "../utils/initAuth";
 import { _partsToJPN, _units, _UNITS_DB } from "../utils/staticValues";
 import ErrorMessage from "./ErrorMessage";
 
-const RenderQuiz = ({ vocabsData }) => {
+const RenderQuiz = ({ vocabsData, inOrder }) => {
   if (vocabsData === undefined)
     return (
       <ErrorMessage message="unexpected error happened" backURL="/vocabulary" />
     );
 
-  const vocabs: Vocab[] = vocabsData.data().list;
+  let vocabs = inOrder
+    ? vocabsData.data().list
+    : shuffle(vocabsData.data().list);
 
   if (vocabs === undefined)
     return <ErrorMessage message="error loading" backURL="/vocabulary" />;
 
-  const [numOfChoices, setNumOfChoices] = useState(4);
-  const [numOfQs, setNumOfQs] = useState(20);
   const [currentId, setCurrentId] = useState(0);
-  const [currentVocab, setVocab] = useState(vocabs[currentId]);
+  const [currentVocab, setCurrentVocab] = useState(vocabs[currentId]);
   const [userChoices, setUserChoices] = useState<QuestionData[]>([]);
   const [choices, setChoices] = useState<Choice[]>([]);
+
+  const [numOfChoices, setNumOfChoices] = useState(4);
+  const [numOfQs, setNumOfQs] = useState(20);
   const [showAnswer, setShowAnswer] = useState(false);
   const [showNext, setShowNext] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -43,7 +48,7 @@ const RenderQuiz = ({ vocabsData }) => {
 
   const goNext = () => {
     setCurrentId(currentId + 1);
-    setVocab(vocabs[currentId + 1]);
+    setCurrentVocab(vocabs[currentId + 1]);
     setShowAnswer(false);
     setShowNext(false);
   };
@@ -97,8 +102,9 @@ const RenderQuiz = ({ vocabsData }) => {
       ...getOneMeaningForOne(currentVocab),
       correct: true,
     });
+
     for (let i = 0; i < numOfChoices - 1; i++) {
-      const choice = {
+      const choiceWrong = {
         ...getOneMeaningForOne(
           vocabs[Math.floor(Math.random() * vocabs.length)]
         ),
@@ -110,16 +116,11 @@ const RenderQuiz = ({ vocabsData }) => {
       //   newChoices.find((c) => c.meaning === choice.meaning)
       // );
       // console.log("choices", newChoices);
-      if (!newChoices.find((c) => c.meaning === choice.meaning)) {
+      if (!newChoices.find((c) => c.meaning === choiceWrong.meaning)) {
         //- meaning no duplicate in choices
-        newChoices.push({
-          ...getOneMeaningForOne(
-            vocabs[Math.floor(Math.random() * vocabs.length)]
-          ),
-          correct: false,
-        });
+        newChoices.push(choiceWrong);
       } else {
-        //- meaning the choice already exist
+        //- meaning the choice already exist, add one more round
         --i;
       }
     }
@@ -213,7 +214,7 @@ const RenderQuiz = ({ vocabsData }) => {
   );
 };
 
-const MultQ = ({ unitId }) => {
+const MultQ = ({ unitId, inOrder }) => {
   if (unitId < 0 || unitId > _units.length - 1) {
     return <p>{`${unitId} doesn't exist`}</p>;
   }
@@ -226,7 +227,7 @@ const MultQ = ({ unitId }) => {
     <>
       {vocabError && <p>{vocabError?.message}</p>}
       {vocabLoading && <p>Loading...</p>}
-      {vocabsData && <RenderQuiz vocabsData={vocabsData} />}
+      {vocabsData && <RenderQuiz vocabsData={vocabsData} inOrder={inOrder} />}
     </>
   );
 };

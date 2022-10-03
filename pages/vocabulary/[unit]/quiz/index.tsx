@@ -9,16 +9,16 @@ export enum Modes {
   Multiple,
 }
 
-const ReturnMode = ({ mode, unitId }) => {
+const ReturnMode = ({ mode, unitId, inOrder }) => {
   if (+mode === Modes.Multiple) {
-    return <MultQ unitId={unitId} />;
+    return <MultQ unitId={unitId} inOrder={inOrder} />;
   }
   return <></>;
 };
 
 const Quiz = () => {
   const router = useRouter();
-  const { unitId, mode } = router.query;
+  const { unitId, mode, inOrder } = router.query;
 
   //return error if unitId is not 0~5
   if (unitId === undefined || +unitId < 0 || +unitId > _units.length - 1) {
@@ -37,7 +37,7 @@ const Quiz = () => {
 
       <h1>Unit {unitId} - 選択クイズ</h1>
       <hr />
-      <ReturnMode mode={mode} unitId={unitId} />
+      <ReturnMode mode={mode} unitId={unitId} inOrder={inOrder === "true"} />
     </Container>
   );
 };

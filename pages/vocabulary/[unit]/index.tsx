@@ -8,7 +8,7 @@ import { db } from "../../../utils/initAuth";
 import VocabList from "../../../components/VocabList";
 import FlashCards from "../../../components/FlashCards";
 import Link from "next/link";
-import { Button, Container } from "reactstrap";
+import { Button, Col, Container, Row } from "reactstrap";
 
 import { Modes } from "./quiz";
 import { _units, _UNITS_DB } from "../../../utils/staticValues";
@@ -34,15 +34,44 @@ const RenderDetail = ({ unitId }) => {
           <FlashCards unitData={vocab} />
 
           <hr />
-          <h2>Study Modes</h2>
-          <Link
-            href={{
-              pathname: "vocabulary/quiz",
-              query: { unitId: unitId, mode: Modes.Multiple },
-            }}
-          >
-            <Button>4択クイズ</Button>
-          </Link>
+          <Row>
+            <h2>Study Modes</h2>
+          </Row>
+          <Row>
+            <Col xs="3" className="m-1">
+              <Link
+                href={{
+                  pathname: "vocabulary/quiz",
+                  query: {
+                    unitId: unitId,
+                    mode: Modes.Multiple,
+                    inOrder: false,
+                  },
+                }}
+                passHref
+              >
+                <Button>4択クイズ(ランダム順番)</Button>
+              </Link>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs="3" className="m-1">
+              <Link
+                href={{
+                  pathname: "vocabulary/quiz",
+                  query: {
+                    unitId: unitId,
+                    mode: Modes.Multiple,
+                    inOrder: true,
+                  },
+                }}
+                passHref
+              >
+                <Button>4択クイズ(単語番号順)</Button>
+              </Link>
+            </Col>
+          </Row>
+
           <hr />
           <VocabList unitData={vocab} unitId={unitId} />
         </>
