@@ -2,13 +2,11 @@ import React from "react";
 import { Col, Container, Row } from "reactstrap";
 
 import { getAuth } from "firebase/auth";
-import { collection, doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useCollection } from "react-firebase-hooks/firestore";
 
 import { db } from "../utils/initAuth";
 import SignInScreen from "../components/FirebaseAuth";
-import VocabList from "../components/VocabList";
 
 const Home = () => {
   const [user, loading, error] = useAuthState(getAuth());

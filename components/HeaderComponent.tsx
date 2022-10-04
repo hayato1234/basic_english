@@ -1,9 +1,6 @@
 import Link from "next/link";
 import React, { useState } from "react";
 
-//regular import gives warning (due to typescript)
-const styles = require("../styles/Header.module.css");
-
 import {
   Navbar,
   NavbarBrand,
@@ -13,6 +10,9 @@ import {
   NavItem,
   NavLink,
 } from "reactstrap";
+
+//regular import gives warning (due to typescript)
+const styles = require("../styles/Header.module.css");
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);

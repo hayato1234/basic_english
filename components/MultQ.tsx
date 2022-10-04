@@ -1,10 +1,8 @@
-import { FormControlLabel, Switch } from "@mui/material";
 import { doc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useDocument } from "react-firebase-hooks/firestore";
 import {
   Button,
-  Col,
   List,
   ListGroup,
   ListGroupItem,
@@ -12,28 +10,18 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
-  Row,
 } from "reactstrap";
-import { Choice, QuestionData, Vocab } from "../types/vocabType";
+import { Choice, QuestionData } from "../types/vocabType";
 import { shuffle } from "../utils/arraySort";
 import { getOneMeaningForOne } from "../utils/getMeaning";
 import { db } from "../utils/initAuth";
-import { _partsToJPN, _units, _UNITS_DB } from "../utils/staticValues";
+import { _units, _UNITS_DB } from "../utils/staticValues";
 import ErrorMessage from "./ErrorMessage";
 
 const RenderQuiz = ({ vocabsData, inOrder }) => {
-  if (vocabsData === undefined)
-    return (
-      <ErrorMessage message="unexpected error happened" backURL="/vocabulary" />
-    );
-
   const [vocabs, setVocabs] = useState(
     inOrder ? vocabsData.data().list : shuffle(vocabsData.data().list)
   );
-
-  if (vocabs === undefined)
-    return <ErrorMessage message="error loading" backURL="/vocabulary" />;
-
   const [currentId, setCurrentId] = useState(0);
   const [currentVocab, setCurrentVocab] = useState(vocabs[currentId]);
   const [userChoices, setUserChoices] = useState<QuestionData[]>([]);
@@ -47,6 +35,14 @@ const RenderQuiz = ({ vocabsData, inOrder }) => {
 
   useEffect(() => setChoices(getChoices()), [currentId]);
 
+  if (vocabsData === undefined)
+    return (
+      <ErrorMessage message="unexpected error happened" backURL="/vocabulary" />
+    );
+
+  if (vocabs === undefined)
+    return <ErrorMessage message="error loading" backURL="/vocabulary" />;
+
   const goNext = () => {
     setCurrentId(currentId + 1);
     setCurrentVocab(vocabs[currentId + 1]);
@@ -56,6 +52,10 @@ const RenderQuiz = ({ vocabsData, inOrder }) => {
 
   const finish = () => {
     toggleModal();
+  };
+
+  const changeNumOfQ = (num: number) => {
+    setNumOfQs(num);
   };
 
   const retry = () => {
@@ -104,6 +104,7 @@ const RenderQuiz = ({ vocabsData, inOrder }) => {
     if (!(currentId + 1 >= numOfQs)) setShowNext(true);
   };
 
+  //move this in useEffect
   const getChoices = () => {
     const newChoices: { part: string; meaning: string; correct: boolean }[] =
       [];
@@ -228,13 +229,14 @@ const RenderQuiz = ({ vocabsData, inOrder }) => {
 };
 
 const MultQ = ({ unitId, inOrder }) => {
-  if (unitId < 0 || unitId > _units.length - 1) {
-    return <p>{`${unitId} doesn't exist`}</p>;
-  }
   const [vocabsData, vocabLoading, vocabError] = useDocument(
     doc(db, _UNITS_DB, `unit${unitId}`),
     {}
   );
+
+  if (unitId < 0 || unitId > _units.length - 1) {
+    return <p>{`${unitId} doesn't exist`}</p>;
+  }
 
   return (
     <>

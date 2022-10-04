@@ -1,5 +1,4 @@
 import React from "react";
-import { QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
 import { Vocab } from "../types/vocabType";
 import Link from "next/link";
 

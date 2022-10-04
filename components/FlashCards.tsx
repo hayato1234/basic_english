@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Col, Input, Row } from "reactstrap";
+import { Button, Col, Row } from "reactstrap";
 import Switch from "@mui/material/Switch";
 import { Vocab } from "../types/vocabType";
 
@@ -11,6 +11,12 @@ import { _partsList, _partsToJPN } from "../utils/staticValues";
 const styles = require("../styles/Vocab.module.css");
 
 const FlashCards = ({ unitData }) => {
+  const [vocabs, setVocabs] = useState(unitData?.data().list);
+
+  const [leftIndex, setLeftIndex] = useState(0);
+  const lastIndex = vocabs.length - 1;
+
+  const [randomize, setRandomize] = useState(false);
   if (!unitData) {
     return (
       <>
@@ -22,12 +28,6 @@ const FlashCards = ({ unitData }) => {
     );
   }
 
-  const [vocabs, setVocabs] = useState(unitData.data().list);
-
-  const [leftIndex, setLeftIndex] = useState(0);
-  const lastIndex = vocabs.length - 1;
-
-  const [randomize, setRandomize] = useState(false);
   const label = { inputProps: { "aria-label": "randomize order" } };
   const handleRandomize = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRandomize(event.target.checked);
@@ -36,6 +36,7 @@ const FlashCards = ({ unitData }) => {
   };
 
   const meaning = _partsList.map((part) => {
+    // ! change this to reduce
     const vocab = vocabs[leftIndex - 1];
     if (vocab) {
       return (
@@ -47,6 +48,8 @@ const FlashCards = ({ unitData }) => {
           </Row>
         )
       );
+    } else {
+      return;
     }
   });
 

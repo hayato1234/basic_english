@@ -18,7 +18,7 @@ import {
 const styles = require("../../../../styles/Vocab.module.css");
 
 export const ShowVocabDetail = ({ vocabData, vocabId, unitId }) => {
-  const vocab = vocabData.list.filter((v: Vocab) => v.num == vocabId)[0];
+  const vocab = vocabData.list.filter((v: Vocab) => v.num === vocabId)[0];
   const firstVocabId = vocabData.list[0].num;
   const lastVocabId = vocabData.list.at(-1).num;
 

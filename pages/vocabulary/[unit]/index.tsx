@@ -1,7 +1,7 @@
 import React from "react";
 import { useRouter } from "next/router";
-import { useCollection, useDocument } from "react-firebase-hooks/firestore";
-import { collection, doc, getDoc, query } from "firebase/firestore";
+import { useDocument } from "react-firebase-hooks/firestore";
+import { doc } from "firebase/firestore";
 
 import { db } from "../../../utils/initAuth";
 
@@ -82,7 +82,7 @@ const RenderDetail = ({ unitId }) => {
   );
 };
 
-const unitDetail = () => {
+const UnitDetail = () => {
   const router = useRouter();
   const { unit } = router.query;
   const unitId = unit ? +unit : 0;
@@ -103,4 +103,4 @@ const unitDetail = () => {
   );
 };
 
-export default unitDetail;
+export default UnitDetail;
