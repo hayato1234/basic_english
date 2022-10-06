@@ -23,6 +23,7 @@
 .env.test.local
 .env.production.local
 *.pem
+/.vscode/
 
 # debug
 npm-debug.log*
