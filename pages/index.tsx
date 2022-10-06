@@ -1,7 +1,7 @@
 import React from "react";
-import { Col, Container, Row } from "reactstrap";
+import { Card, CardHeader, Col, Container, Row } from "reactstrap";
 
-import { getAuth } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 
@@ -11,7 +11,7 @@ import SignInScreen from "../components/FirebaseAuth";
 const Home = () => {
   const [user, loading, error] = useAuthState(getAuth());
 
-  const handleClick = async () => {
+  const addNewUnit = async () => {
     if (user) {
       await setDoc(doc(db, "unit_data", "test"), {
         test1: "test1",
@@ -21,29 +21,46 @@ const Home = () => {
     }
   };
 
-  return (
+  const dashBoard = (
     <Container>
+      {user && <h1>Welcome back {user?.displayName}</h1>}
+      {user && (
+        <a role="button" onClick={() => signOut(getAuth())}>
+          Logout
+        </a>
+      )}
+      <h2>Go to...</h2>
       <Row>
-        <Col>
-          <h1>Welcome to Basic English Grammar page!</h1>
+        <Col md="4">
+          <Card>
+            <CardHeader>単語</CardHeader>
+          </Card>
+        </Col>
+        <Col md="4">
+          <Card>
+            <CardHeader>文法</CardHeader>
+          </Card>
         </Col>
       </Row>
-      <Row className="mt-2">
-        {loading ? (
-          <p>Logging in</p>
-        ) : user ? (
-          <p>{user.email}</p>
-        ) : (
-          <p>{error?.message}</p>
-        )}
-        <SignInScreen />
-      </Row>
-      {/* <Row>
-        <Col md={2}>
-          <button onClick={handleClick}>Add</button>
-        </Col>
-      </Row> */}
+      <h2>Recent</h2>
     </Container>
+  );
+
+  return (
+    <div style={{ backgroundColor: "#F5F5F5" }}>
+      {loading ? (
+        <p>Logging in</p>
+      ) : error ? (
+        <p>{error?.message}</p>
+      ) : user ? (
+        dashBoard
+      ) : (
+        <>
+          <SignInScreen />
+          {dashBoard}
+        </>
+      )}
+    </div>
   );
 };
 
