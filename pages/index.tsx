@@ -38,11 +38,11 @@ const Home = () => {
         )}
         <SignInScreen />
       </Row>
-      <Row>
+      {/* <Row>
         <Col md={2}>
           <button onClick={handleClick}>Add</button>
         </Col>
-      </Row>
+      </Row> */}
     </Container>
   );
 };
