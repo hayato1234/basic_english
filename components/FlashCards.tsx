@@ -6,7 +6,7 @@ import { Vocab } from "../types/vocabType";
 import { FormControlLabel } from "@mui/material";
 import { shuffle } from "../utils/arraySort";
 import Link from "next/link";
-import { _partsList, _partsToJPN } from "../utils/staticValues";
+import { PARTS_LIST, PARTS_TO_JPN } from "../utils/staticValues";
 
 const styles = require("../styles/Vocab.module.css");
 
@@ -35,15 +35,15 @@ const FlashCards = ({ unitData }) => {
     else vocabs.sort((a: Vocab, b: Vocab) => a.num - b.num);
   };
 
-  const meaning = _partsList.map((part) => {
-    // ! change this to reduce
+  // ! change this to reduce
+  const meaning = PARTS_LIST.map((part) => {
     const vocab = vocabs[leftIndex - 1];
     if (vocab) {
       return (
         vocab[part] && (
           <Row key={part}>
             <Col>
-              <p>{`${_partsToJPN[part]} : ${vocab[part]}`}</p>
+              <p>{`${PARTS_TO_JPN[part]} : ${vocab[part]}`}</p>
             </Col>
           </Row>
         )

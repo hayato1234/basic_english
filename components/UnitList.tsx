@@ -15,7 +15,7 @@ import { collection } from "firebase/firestore";
 import { db } from "../utils/initAuth";
 import { Vocab } from "../types/vocabType";
 import Link from "next/link";
-import { _units, _UNITS_DB } from "../utils/staticValues";
+import { UNITS, DB_UNITS } from "../utils/staticValues";
 
 const styles = require("../styles/Vocab.module.css");
 
@@ -55,7 +55,7 @@ const UnitTiles = ({ unitData, unitId }) => {
 
 const UnitList = () => {
   const [unitsData, unitsDataLoading, unitsDataError] = useCollection(
-    collection(db, _UNITS_DB),
+    collection(db, DB_UNITS),
     {}
   );
 
@@ -67,7 +67,7 @@ const UnitList = () => {
             {unitsDataLoading ? (
               <h5>Loading...</h5>
             ) : unitsData ? (
-              <UnitTiles unitData={unitsData.docs[0]} unitId={_units[0]} />
+              <UnitTiles unitData={unitsData.docs[0]} unitId={UNITS[0]} />
             ) : (
               <h5>{`Error loading: ${unitsDataError}`}</h5>
             )}
@@ -76,7 +76,7 @@ const UnitList = () => {
             {unitsDataLoading ? (
               <></>
             ) : unitsData ? (
-              <UnitTiles unitData={unitsData.docs[1]} unitId={_units[1]} />
+              <UnitTiles unitData={unitsData.docs[1]} unitId={UNITS[1]} />
             ) : (
               <></>
             )}
@@ -87,7 +87,7 @@ const UnitList = () => {
             {unitsDataLoading ? (
               <></>
             ) : unitsData ? (
-              <UnitTiles unitData={unitsData.docs[2]} unitId={_units[2]} />
+              <UnitTiles unitData={unitsData.docs[2]} unitId={UNITS[2]} />
             ) : (
               <></>
             )}
@@ -96,7 +96,7 @@ const UnitList = () => {
             {unitsDataLoading ? (
               <></>
             ) : unitsData ? (
-              <UnitTiles unitData={unitsData.docs[3]} unitId={_units[3]} />
+              <UnitTiles unitData={unitsData.docs[3]} unitId={UNITS[3]} />
             ) : (
               <></>
             )}
@@ -107,7 +107,7 @@ const UnitList = () => {
             {unitsDataLoading ? (
               <></>
             ) : unitsData ? (
-              <UnitTiles unitData={unitsData.docs[4]} unitId={_units[4]} />
+              <UnitTiles unitData={unitsData.docs[4]} unitId={UNITS[4]} />
             ) : (
               <></>
             )}
@@ -116,7 +116,7 @@ const UnitList = () => {
             {unitsDataLoading ? (
               <></>
             ) : unitsData ? (
-              <UnitTiles unitData={unitsData.docs[5]} unitId={_units[5]} />
+              <UnitTiles unitData={unitsData.docs[5]} unitId={UNITS[5]} />
             ) : (
               <></>
             )}

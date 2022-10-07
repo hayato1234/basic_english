@@ -24,11 +24,6 @@ const Home = () => {
   const dashBoard = (
     <Container>
       {user && <h1>Welcome back {user?.displayName}</h1>}
-      {user && (
-        <a role="button" onClick={() => signOut(getAuth())}>
-          Logout
-        </a>
-      )}
       <h2>Go to...</h2>
       <Row>
         <Col md="4">
@@ -47,7 +42,7 @@ const Home = () => {
   );
 
   return (
-    <div style={{ backgroundColor: "#F5F5F5" }}>
+    <div>
       {loading ? (
         <p>Logging in</p>
       ) : error ? (

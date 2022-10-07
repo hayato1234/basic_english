@@ -1,21 +1,20 @@
 import React from "react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useDocument } from "react-firebase-hooks/firestore";
 import { doc } from "firebase/firestore";
-
-import { db } from "../../../utils/initAuth";
+import { Button, Col, Container, Row } from "reactstrap";
 
 import VocabList from "../../../components/VocabList";
 import FlashCards from "../../../components/FlashCards";
-import Link from "next/link";
-import { Button, Col, Container, Row } from "reactstrap";
 
 import { Modes } from "./quiz";
-import { _units, _UNITS_DB } from "../../../utils/staticValues";
+import { db } from "../../../utils/initAuth";
+import { UNITS, DB_UNITS } from "../../../utils/staticValues";
 
 const RenderDetail = ({ unitId }) => {
   const [vocab, vocabLoading, vocabError] = useDocument(
-    doc(db, _UNITS_DB, `unit${unitId}`),
+    doc(db, DB_UNITS, `unit${unitId}`),
     {}
   );
   return (
@@ -89,7 +88,7 @@ const UnitDetail = () => {
 
   return (
     <>
-      {unitId < 0 || unitId > _units.length - 1 ? (
+      {unitId < 0 || unitId > UNITS.length - 1 ? (
         <>
           <Link href="/vocabulary">
             <i className="fa fa-arrow-left" aria-hidden="true" />

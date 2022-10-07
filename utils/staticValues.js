@@ -1,7 +1,8 @@
-export const _UNITS_DB = "unit_data";
-export const _units = [0, 1, 2, 3, 4, 5];
+export const DB_UNITS = "unit_data";
+export const DB_USER_DATA = "user_data";
+export const UNITS = [0, 1, 2, 3, 4, 5];
 
-export const _partsToJPN = {
+export const PARTS_TO_JPN = {
   noun: "名詞",
   tverb: "他動詞",
   itverb: "自動詞",
@@ -10,7 +11,7 @@ export const _partsToJPN = {
   prep: "前置詞",
   conn: "接続詞",
 };
-export const _partsList = [
+export const PARTS_LIST = [
   "noun",
   "tverb",
   "itverb",

@@ -59,14 +59,18 @@ const Header = () => {
             >
               <PopoverBody>
                 <Link passHref href="/user">
-                  <NavLink>Profile</NavLink>
+                  <NavLink>
+                    <i className="fa fa-user" aria-hidden="true" /> Profile
+                  </NavLink>
                 </Link>
                 <Link passHref href="/settings">
-                  <NavLink>Settings</NavLink>
+                  <NavLink>
+                    <i className="fa fa-cog" aria-hidden="true" /> Settings
+                  </NavLink>
                 </Link>
                 <hr />
                 <a role="button" onClick={() => signOut(getAuth())}>
-                  Logout
+                  <i className="fa fa-sign-out" aria-hidden="true" /> Logout
                 </a>
               </PopoverBody>
             </UncontrolledPopover>

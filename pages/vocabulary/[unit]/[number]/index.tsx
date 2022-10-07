@@ -10,9 +10,9 @@ import { db } from "../../../../utils/initAuth";
 import { Col, Container, Row } from "reactstrap";
 import ReportIssue from "../../../../components/ReportIssue";
 import {
-  _partsList,
-  _partsToJPN,
-  _UNITS_DB,
+  PARTS_LIST,
+  PARTS_TO_JPN,
+  DB_UNITS,
 } from "../../../../utils/staticValues";
 
 const styles = require("../../../../styles/Vocab.module.css");
@@ -45,12 +45,12 @@ export const ShowVocabDetail = ({ vocabData, vocabId, unitId }) => {
           </Col>
         </Row>
 
-        {_partsList.map((part) => {
+        {PARTS_LIST.map((part) => {
           return (
             vocab[part] && (
               <Row key={part} className={styles.meaningRow}>
                 <Col xs={6} className={styles.meaningCol}>
-                  <p>{`${_partsToJPN[part]} : ${vocab[part]}`}</p>
+                  <p>{`${PARTS_TO_JPN[part]} : ${vocab[part]}`}</p>
                 </Col>
               </Row>
             )
@@ -111,7 +111,7 @@ const VocabDetail = () => {
   const vocabId = data.number ? +data.number : 0;
 
   const [vocabData, vocabLoading, vocabError] = useDocument(
-    doc(db, _UNITS_DB, `unit${unitId}`),
+    doc(db, DB_UNITS, `unit${unitId}`),
     {}
   );
 

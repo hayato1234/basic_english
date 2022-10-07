@@ -3,7 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { Container } from "reactstrap";
 import MultQ from "../../../../components/MultQ";
-import { _units } from "../../../../utils/staticValues";
+import { UNITS } from "../../../../utils/staticValues";
 
 export enum Modes {
   Multiple,
@@ -21,7 +21,7 @@ const Quiz = () => {
   const { unitId, mode, inOrder } = router.query;
 
   //return error if unitId is not 0~5
-  if (unitId === undefined || +unitId < 0 || +unitId > _units.length - 1) {
+  if (unitId === undefined || +unitId < 0 || +unitId > UNITS.length - 1) {
     return <p>{unitId} doesn't exist</p>;
   }
 

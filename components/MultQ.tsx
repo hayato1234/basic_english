@@ -1,6 +1,8 @@
-import { doc } from "firebase/firestore";
+import { doc, setDoc, collection, updateDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { useDocument } from "react-firebase-hooks/firestore";
+import { getAuth } from "firebase/auth";
+import { useDocument, useCollection } from "react-firebase-hooks/firestore";
+import { useAuthState } from "react-firebase-hooks/auth";
 import {
   Button,
   List,
@@ -15,10 +17,17 @@ import { Choice, QuestionData } from "../types/vocabType";
 import { shuffle } from "../utils/arraySort";
 import { getOneMeaningForOne } from "../utils/getMeaning";
 import { db } from "../utils/initAuth";
-import { _units, _UNITS_DB } from "../utils/staticValues";
+import { UNITS, DB_UNITS, DB_USER_DATA } from "../utils/staticValues";
 import ErrorMessage from "./ErrorMessage";
 
-const RenderQuiz = ({ vocabsData, inOrder }) => {
+const RenderQuiz = ({ vocabsData, inOrder, unitId, currUser }) => {
+  // const [user, loading, error] = useAuthState(getAuth());
+
+  const [userData, userDataLoading, userDataError] = useDocument(
+    doc(db, DB_USER_DATA, currUser.uid),
+    {}
+  );
+  // userData && console.log(userData.data());
   const [vocabs, setVocabs] = useState(
     inOrder ? vocabsData.data().list : shuffle(vocabsData.data().list)
   );
@@ -67,6 +76,7 @@ const RenderQuiz = ({ vocabsData, inOrder }) => {
     toggleModal();
   };
 
+  // -----------------------check answer-----------------------------------------------
   const checkAnswer = (
     event: React.MouseEvent<HTMLButtonElement>,
     userChoice: string
@@ -77,7 +87,11 @@ const RenderQuiz = ({ vocabsData, inOrder }) => {
       let isCorrect = false;
 
       //- checking if user's got correct
-      if (userChoice === answer.meaning) isCorrect = true;
+      if (userChoice === answer.meaning) {
+        isCorrect = true;
+      } else {
+        currUser && uploadMissedVocab(currentVocab.num);
+      }
 
       //- record the question data
       setUserChoices([
@@ -92,18 +106,60 @@ const RenderQuiz = ({ vocabsData, inOrder }) => {
         },
       ]);
 
-      console.log({
-        userChoice: userChoice,
-        choices: choices,
-        gotCorrect: isCorrect,
-      });
+      // console.log({
+      //   userChoice: userChoice,
+      //   choices: choices,
+      //   gotCorrect: isCorrect,
+      // });
     }
 
     setShowAnswer(true);
     // - show the next button if less than numOfQs
     if (!(currentId + 1 >= numOfQs)) setShowNext(true);
   };
+  // -----------------------check answer-----------------------------------------------
 
+  // -----------------------upload missed-----------------------------------------------
+  const uploadMissedVocab = async (vocabId: number) => {
+    if (userData !== undefined && userData.data() !== undefined) {
+      // userData && userData.data() && userData.data().vocab
+      // console.log(userData.data()!.vocab.missedIds.unit0);
+      const unitField = "unit" + unitId;
+      if (userData.data()?.vocab) {
+        if (userData.data()?.vocab.missedIds[unitField]) {
+          //get here if no prev miss found for this unit
+          currUser &&
+            (await updateDoc(doc(db, DB_USER_DATA, currUser.uid), {
+              vocab: {
+                ...userData.data()?.vocab,
+                missedIds: {
+                  ...userData.data()?.vocab.missedIds,
+                  [unitField]: [
+                    ...userData.data()?.vocab.missedIds[unitField],
+                    vocabId,
+                  ],
+                },
+              },
+            }));
+        } else {
+          //get here if first miss for this unit
+          currUser &&
+            (await updateDoc(doc(db, DB_USER_DATA, currUser.uid), {
+              vocab: {
+                ...userData.data()?.vocab,
+                missedIds: {
+                  ...userData.data()?.vocab.missedIds,
+                  [unitField]: [vocabId],
+                },
+              },
+            }));
+        }
+      }
+    }
+  };
+  // -----------------------upload missed-----------------------------------------------
+
+  // -----------------------get choice-----------------------------------------------
   //move this in useEffect
   const getChoices = () => {
     const newChoices: { part: string; meaning: string; correct: boolean }[] =
@@ -137,6 +193,8 @@ const RenderQuiz = ({ vocabsData, inOrder }) => {
       { part: "", meaning: "わからない", correct: false },
     ];
   };
+
+  // -----------------------get choice-----------------------------------------------
 
   const toggleModal = () => {
     setModalOpen(!isModalOpen);
@@ -187,7 +245,7 @@ const RenderQuiz = ({ vocabsData, inOrder }) => {
                   <h6 style={{ color: c.gotCorrect ? "black" : "red" }}>{`#${
                     c.quesNum + 1
                   }. ${c.question}`}</h6>
-                  <p>
+                  <>
                     {c.gotCorrect ? (
                       <div style={{ color: "green" }}>
                         <i
@@ -208,7 +266,7 @@ const RenderQuiz = ({ vocabsData, inOrder }) => {
                         <div style={{ color: "green" }}>{c.answer}</div>
                       </>
                     )}
-                  </p>
+                  </>
                 </ListGroupItem>
               );
             })}
@@ -230,11 +288,13 @@ const RenderQuiz = ({ vocabsData, inOrder }) => {
 
 const MultQ = ({ unitId, inOrder }) => {
   const [vocabsData, vocabLoading, vocabError] = useDocument(
-    doc(db, _UNITS_DB, `unit${unitId}`),
+    doc(db, DB_UNITS, `unit${unitId}`),
     {}
   );
+  const user =
+    getAuth().currentUser !== null ? getAuth().currentUser : { uid: "" };
 
-  if (unitId < 0 || unitId > _units.length - 1) {
+  if (unitId < 0 || unitId > UNITS.length - 1) {
     return <p>{`${unitId} doesn't exist`}</p>;
   }
 
@@ -242,7 +302,14 @@ const MultQ = ({ unitId, inOrder }) => {
     <>
       {vocabError && <p>{vocabError?.message}</p>}
       {vocabLoading && <p>Loading...</p>}
-      {vocabsData && <RenderQuiz vocabsData={vocabsData} inOrder={inOrder} />}
+      {vocabsData && (
+        <RenderQuiz
+          vocabsData={vocabsData}
+          inOrder={inOrder}
+          unitId={unitId}
+          currUser={user}
+        />
+      )}
     </>
   );
 };

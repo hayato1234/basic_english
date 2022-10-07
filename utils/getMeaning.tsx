@@ -1,10 +1,10 @@
 import { Vocab } from "../types/vocabType";
-import { _partsList } from "./staticValues";
+import { PARTS_LIST } from "./staticValues";
 
 export const getMeaningsForOne = (vocab: Vocab) => {
   const meanings: { part: string; meaning: string }[] = [];
 
-  for (const part of _partsList) {
+  for (const part of PARTS_LIST) {
     if (vocab[part]) meanings.push({ part: part, meaning: vocab[part] });
   }
 
