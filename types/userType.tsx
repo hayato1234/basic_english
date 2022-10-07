@@ -1,7 +1,6 @@
 export interface userData {
   history: string[];
-  vocab: vocabData;
-  favorite: unitData;
+  vocabData: vocabData;
 }
 
 export interface history {
@@ -11,7 +10,7 @@ export interface history {
 
 export interface vocabData {
   missedVocab: unitData;
-  favorite: number[];
+  favorite: unitData;
 }
 
 export interface unitData {

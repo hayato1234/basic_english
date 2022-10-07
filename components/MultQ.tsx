@@ -122,38 +122,60 @@ const RenderQuiz = ({ vocabsData, inOrder, unitId, currUser }) => {
   // -----------------------upload missed-----------------------------------------------
   const uploadMissedVocab = async (vocabId: number) => {
     if (userData !== undefined && userData.data() !== undefined) {
-      // userData && userData.data() && userData.data().vocab
-      // console.log(userData.data()!.vocab.missedIds.unit0);
       const unitField = "unit" + unitId;
       if (userData.data()?.vocab) {
-        if (userData.data()?.vocab.missedIds[unitField]) {
-          //get here if no prev miss found for this unit
-          currUser &&
-            (await updateDoc(doc(db, DB_USER_DATA, currUser.uid), {
-              vocab: {
-                ...userData.data()?.vocab,
-                missedIds: {
-                  ...userData.data()?.vocab.missedIds,
-                  [unitField]: [
-                    ...userData.data()?.vocab.missedIds[unitField],
-                    vocabId,
-                  ],
+        if (userData.data()?.vocab.missedIds) {
+          //i- get here if no prev miss found for any unit
+          if (userData.data()?.vocab.missedIds[unitField]) {
+            //i- get here if no prev miss found for this unit
+            currUser &&
+              (await updateDoc(doc(db, DB_USER_DATA, currUser.uid), {
+                vocab: {
+                  ...userData.data()?.vocab,
+                  missedIds: {
+                    ...userData.data()?.vocab.missedIds,
+                    [unitField]: [
+                      ...userData.data()?.vocab.missedIds[unitField],
+                      vocabId,
+                    ],
+                  },
                 },
-              },
-            }));
+              }));
+          } else {
+            //i- get here if first miss for this unit
+            currUser &&
+              (await updateDoc(doc(db, DB_USER_DATA, currUser.uid), {
+                vocab: {
+                  ...userData.data()?.vocab,
+                  missedIds: {
+                    ...userData.data()?.vocab.missedIds,
+                    [unitField]: [vocabId],
+                  },
+                },
+              }));
+          }
         } else {
-          //get here if first miss for this unit
+          //i- get here if vocab field exists but no missedIds at all
           currUser &&
             (await updateDoc(doc(db, DB_USER_DATA, currUser.uid), {
               vocab: {
                 ...userData.data()?.vocab,
                 missedIds: {
-                  ...userData.data()?.vocab.missedIds,
                   [unitField]: [vocabId],
                 },
               },
             }));
         }
+      } else {
+        //i- get here if vocab field doesn't exist at all
+        currUser &&
+          (await updateDoc(doc(db, DB_USER_DATA, currUser.uid), {
+            vocab: {
+              missedIds: {
+                [unitField]: [vocabId],
+              },
+            },
+          }));
       }
     }
   };

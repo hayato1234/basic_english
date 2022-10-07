@@ -10,22 +10,48 @@ import { db } from "../utils/initAuth";
 import { DB_USER_DATA, UNITS } from "../utils/staticValues";
 
 const user = () => {
-  const currUser =
-    getAuth().currentUser !== null ? getAuth().currentUser : { uid: "" };
+  const currUser = getAuth().currentUser;
+  if (!currUser)
+    return <ErrorMessage message={"user not found"} backURL={"/"} />;
   const [userData, userDataLoading, userDataError] = useDocument(
-    doc(db, DB_USER_DATA, currUser!.uid),
+    doc(db, DB_USER_DATA, currUser.uid),
     {}
   );
   const [user, loading, error] = useAuthState(getAuth());
 
-  const missedVocabData: ReactNode = UNITS.map((unit) => {
-    let missed = "-";
-    const unitName = "unit" + unit;
-    if (userData && userData.data()?.vocab.missedIds[unitName]) {
-      missed = userData.data()?.vocab.missedIds[unitName];
-    }
-    return <p key={unit}>{`Unit${unit} : ${missed}`}</p>;
-  });
+  //i- return missed data for each unit that exists, return "-" if no data found at all
+  const missedVocabData: ReactNode =
+    userData && userData.data()?.vocab.missedIds ? (
+      UNITS.map((unit) => {
+        const unitName = "unit" + unit;
+        let missed = "-";
+        //i- if missed vocabs exit for the unit, add the list
+        if (userData.data()?.vocab.missedIds[unitName]) {
+          missed = userData.data()?.vocab.missedIds[unitName];
+        }
+        return <p key={unit}>{`Unit${unit} : ${missed}`}</p>;
+      })
+    ) : (
+      <p>-</p>
+    );
+
+  //i- return fav data for each unit that exists, return "-" if no fav found at all
+  const favVocabData: ReactNode =
+    userData && userData.data()?.vocab.favorite ? (
+      UNITS.map((unit) => {
+        const unitName = "unit" + unit;
+        if (userData.data()?.vocab.favorite[unitName]) {
+          return (
+            <p>{`Unit${unit} : ${
+              userData.data()?.vocab.favorite[unitName]
+            }`}</p>
+          );
+        }
+        return <></>;
+      })
+    ) : (
+      <p>-</p>
+    );
 
   return (
     <Container>
@@ -39,22 +65,31 @@ const user = () => {
           <Row style={{ display: "flex", alignItems: "center" }}>
             <Col md="1">
               {user.photoURL && (
-                <img style={{ borderRadius: "10px" }} src={user.photoURL} />
+                <img
+                  style={{ borderRadius: "10px", maxWidth: "50px" }}
+                  src={user.photoURL}
+                />
               )}
             </Col>
-            <Col className="ms-2" md="10">
+            <Col className="ms-2">
               <h2 style={{ verticalAlign: "center" }}>{user.displayName}</h2>
             </Col>
           </Row>
           <hr />
-          <h2>History</h2>
+          <h2>History Data</h2>
           {userData && <p>{userData.data()?.history.type.unit[0]}</p>}
-          <h2>Vocabulary</h2>
+          <hr />
+          <h2>Vocabulary Data</h2>
           <h5>お気に入り</h5>
-          <h5>間違えた単語</h5>
+          <Row>
+            <Col>{favVocabData}</Col>
+          </Row>
+          <h5 className="mt-3">間違えた単語</h5>
           <Row>
             <Col>{missedVocabData}</Col>
           </Row>
+          <hr />
+          <h2>Grammar Data</h2>
         </>
       )}
     </Container>

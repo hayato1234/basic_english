@@ -23,7 +23,7 @@ const Home = () => {
 
   const dashBoard = (
     <Container>
-      {user && <h1>Welcome back {user?.displayName}</h1>}
+      {user && <h1>Welcome back {user?.displayName}!</h1>}
       <h2>Go to...</h2>
       <Row>
         <Col md="4">
