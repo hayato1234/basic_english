@@ -124,7 +124,11 @@ const UnitList = () => {
         </Row>
         <Row>
           <Col md={6}>
-            <UnitTiles unitData={null} unitId={"単語を追加"} />
+            {unitsDataLoading ? (
+              <></>
+            ) : (
+              <UnitTiles unitData={null} unitId={"単語を追加"} />
+            )}
           </Col>
         </Row>
       </Container>

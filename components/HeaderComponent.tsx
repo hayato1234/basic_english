@@ -14,6 +14,7 @@ import {
   NavbarText,
   UncontrolledPopover,
   PopoverBody,
+  Button,
 } from "reactstrap";
 
 //i- regular import gives warning (due to typescript)
@@ -84,9 +85,14 @@ const Header = () => {
         )}
         {!user && (
           <NavbarText>
-            <button className="me-5" onClick={() => signInWithGoogle()}>
+            <Button
+              outline
+              color="secondary"
+              className="me-5"
+              onClick={() => signInWithGoogle()}
+            >
               Login
-            </button>
+            </Button>
           </NavbarText>
         )}
       </Collapse>
