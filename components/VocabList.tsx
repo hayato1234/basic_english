@@ -2,13 +2,12 @@ import React, { createRef, RefObject, useState } from "react";
 import { Vocab } from "../types/vocabType";
 import Link from "next/link";
 import { ErrorMessage, Field, Form, Formik } from "formik";
-import { Button, Col, FormGroup, Label } from "reactstrap";
+import { Button, Col, FormGroup } from "reactstrap";
 import { validateSearchForm } from "../utils/validation";
 
 const styles = require("../styles/Vocab.module.css");
 
 const VocabList = ({ unitData, unitId }) => {
-  const [showErrMsg, setShowErrMsg] = useState(false);
   const [searchErrMsg, setSearchErrMsg] = useState("");
   if (!unitData.data()) {
     return (

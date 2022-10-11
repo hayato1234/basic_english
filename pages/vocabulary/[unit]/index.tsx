@@ -13,7 +13,6 @@ import { db } from "../../../utils/initAuth";
 import { UNITS, DB_UNITS, DB_USER_DATA } from "../../../utils/staticValues";
 import { getAuth } from "firebase/auth";
 import { history } from "../../../types/userType";
-import { Formik } from "formik";
 
 const SendHistory = (user: { uid: string }, unitId: number) => {
   const [userData, userDataLoading, userDataError] = useDocument(
