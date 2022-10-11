@@ -1,7 +1,6 @@
 import { getAuth, signOut } from "firebase/auth";
 import Link from "next/link";
 import React, { useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
 
 import {
   Navbar,
@@ -20,8 +19,9 @@ import {
 const styles = require("../styles/Header.module.css");
 
 const Header = () => {
-  const [user, loading, error] = useAuthState(getAuth());
+  // const [user, loading, error] = useAuthState(getAuth());
   const [menuOpen, setMenuOpen] = useState(false);
+  const user = getAuth().currentUser;
   return (
     <Navbar light className={styles.nav} sticky="top" expand="md">
       <NavbarBrand className="ms-3" href="/">
@@ -46,10 +46,14 @@ const Header = () => {
             </Link>
           </NavItem>
         </Nav>
-        {!loading && user && user.photoURL && (
+        {user && user.photoURL && (
           <NavbarText>
-            <a id="userPhoto" role="button" className="p-3">
-              <img src={user.photoURL} className={styles.user_icon} />
+            <a id="userPhoto" role="button" className="p-3" href="#/">
+              <img
+                src={user.photoURL}
+                className={styles.user_icon}
+                alt="user icon"
+              />
             </a>
 
             <UncontrolledPopover
@@ -69,7 +73,7 @@ const Header = () => {
                   </NavLink>
                 </Link>
                 <hr />
-                <a role="button" onClick={() => signOut(getAuth())}>
+                <a role="button" onClick={() => signOut(getAuth())} href="#/">
                   <i className="fa fa-sign-out" aria-hidden="true" /> Logout
                 </a>
               </PopoverBody>

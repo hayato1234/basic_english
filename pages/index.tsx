@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { Card, CardBody, CardHeader, Col, Container, Row } from "reactstrap";
 
-import { getAuth } from "firebase/auth";
+import { getAuth, User } from "firebase/auth";
 import { doc } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useDocument } from "react-firebase-hooks/firestore";
@@ -14,17 +14,14 @@ import { history } from "../types/userType";
 
 const styles = require("../styles/Vocab.module.css");
 
-const RecentStudies = () => {
-  const currUser = getAuth().currentUser;
-  if (!currUser) return <></>;
+const RecentStudies = ({ user }: { user: User }) => {
   const [userData, userDataLoading, userDataError] = useDocument(
-    doc(db, DB_USER_DATA, currUser.uid),
+    doc(db, DB_USER_DATA, user.uid),
     {}
   );
-
   const recentCards: ReactNode[] = [];
 
-  if (userData && userData.data()?.history) {
+  if (!userDataLoading && userData && userData.data()?.history) {
     const history: history[] = userData.data()?.history.reverse();
     const maxLength: number = history.length < 4 ? history.length : 4;
     for (let i = 0; i < maxLength; i++) {
@@ -46,8 +43,8 @@ const RecentStudies = () => {
         </Col>
       );
     }
-  } else {
-    recentCards.unshift(<p key="nodata">No recent data</p>);
+  } else if (userDataError) {
+    recentCards.unshift(<p key="error">Error loading recent data</p>);
   }
   return <>{recentCards}</>;
 };
@@ -82,7 +79,11 @@ const Home = () => {
       </Row>
       <h2>Recent</h2>
       <Row>
-        <RecentStudies />
+        {user ? (
+          <RecentStudies user={user} />
+        ) : (
+          <p>Login to see recent items</p>
+        )}
       </Row>
     </Container>
   );

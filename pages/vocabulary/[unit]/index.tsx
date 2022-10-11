@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useDocument } from "react-firebase-hooks/firestore";
-import { doc, FieldValue, setDoc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { Button, Col, Container, Row } from "reactstrap";
 
 import VocabList from "../../../components/VocabList";
@@ -14,39 +14,30 @@ import { UNITS, DB_UNITS, DB_USER_DATA } from "../../../utils/staticValues";
 import { getAuth } from "firebase/auth";
 import { history } from "../../../types/userType";
 
-const sendHistory = (user: { uid: string }, unitId: number) => {
+const SendHistory = (user: { uid: string }, unitId: number) => {
   const [userData, userDataLoading, userDataError] = useDocument(
     doc(db, DB_USER_DATA, user.uid),
     {}
   );
+  if (userDataError) console.log(userDataError.message);
   const typeVocab = "vocabulary";
   const updateHistory = async () => {
-    if (user)
+    if (!userDataLoading && user)
       if (userData && userData.data()) {
         const allUserData = userData.data();
         if (allUserData?.history) {
           //i- get here if history exists
-
-          // console.log(allUserData?.history);
-          // console.log(
-          //   allUserData?.history.find(
-          //     (h: history) =>
-          //       h.type === typeVocab && h.unitData[0] === `unit${unitId}`
-          //   )
-          // );
-
           if (
             allUserData?.history.find(
               (h: history) =>
                 h.type === typeVocab && h.unitData[0] === `unit${unitId}`
             )
           ) {
-            console.log("existed");
+            //i- get here if the unit already exist in history, so delete and bring it to the last
             const newList = allUserData?.history.filter(
               (h: history) =>
-                h.type === typeVocab && h.unitData[0] != `unit${unitId}`
+                h.type === typeVocab && h.unitData[0] !== `unit${unitId}`
             );
-            console.log(newList);
 
             await updateDoc(doc(db, DB_USER_DATA, user.uid), {
               history: [
@@ -55,7 +46,6 @@ const sendHistory = (user: { uid: string }, unitId: number) => {
               ],
             });
           } else {
-            console.log("new");
             await updateDoc(doc(db, DB_USER_DATA, user.uid), {
               history: [
                 ...allUserData?.history,
@@ -150,7 +140,7 @@ const UnitDetail = () => {
   const unitId = unit ? +unit : 0;
 
   const user = getAuth().currentUser;
-  if (user) sendHistory(user, unitId);
+  if (user) SendHistory(user, unitId);
 
   return (
     <>

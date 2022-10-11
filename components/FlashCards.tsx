@@ -50,7 +50,7 @@ const FlashCards = ({ unitData }) => {
         )
       );
     } else {
-      return;
+      return <></>;
     }
   });
 

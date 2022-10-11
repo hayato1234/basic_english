@@ -5,7 +5,7 @@ import { getAuth, signOut } from "firebase/auth";
 const settings = () => {
   return (
     <div>
-      <a role="button" onClick={() => signOut(getAuth())}>
+      <a href="#/" role="button" onClick={() => signOut(getAuth())}>
         Logout
       </a>
     </div>

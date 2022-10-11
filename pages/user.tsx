@@ -1,7 +1,6 @@
 import React, { ReactNode } from "react";
 import { Container, Row, Col } from "reactstrap";
-import { getAuth } from "firebase/auth";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { getAuth, User } from "firebase/auth";
 
 import ErrorMessage from "../components/ErrorMessage";
 import { doc } from "firebase/firestore";
@@ -10,15 +9,11 @@ import { db } from "../utils/initAuth";
 import { DB_USER_DATA, UNITS } from "../utils/staticValues";
 import { history } from "../types/userType";
 
-const user = () => {
-  const currUser = getAuth().currentUser;
-  if (!currUser)
-    return <ErrorMessage message={"user not found"} backURL={"/"} />;
+const RenderUserPage = ({ user }: { user: User }) => {
   const [userData, userDataLoading, userDataError] = useDocument(
-    doc(db, DB_USER_DATA, currUser.uid),
+    doc(db, DB_USER_DATA, user.uid),
     {}
   );
-  const [user, loading, error] = useAuthState(getAuth());
 
   //i- return missed data for each unit that exists, return "-" if no data found at all
   const missedVocabData: ReactNode =
@@ -53,13 +48,12 @@ const user = () => {
     ) : (
       <p>-</p>
     );
-
   return (
     <Container>
-      {loading ? (
+      {userDataLoading ? (
         <p>loading...</p>
-      ) : error || !user ? (
-        <ErrorMessage message={error?.message} backURL={"/"} />
+      ) : userDataError || !user ? (
+        <ErrorMessage message={userDataError?.message} backURL={"/"} />
       ) : (
         <>
           <h1>Profile</h1>
@@ -70,6 +64,7 @@ const user = () => {
                 <img
                   style={{ borderRadius: "10px", maxWidth: "50px" }}
                   src={user.photoURL}
+                  alt="profile"
                 />
               )}
             </Col>
@@ -104,4 +99,14 @@ const user = () => {
   );
 };
 
-export default user;
+const UserPage = () => {
+  const currUser = getAuth().currentUser;
+
+  return currUser ? (
+    <RenderUserPage user={currUser} />
+  ) : (
+    <ErrorMessage message={"user not found"} backURL={"/"} />
+  );
+};
+
+export default UserPage;
