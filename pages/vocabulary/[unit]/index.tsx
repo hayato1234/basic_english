@@ -13,6 +13,7 @@ import { db } from "../../../utils/initAuth";
 import { UNITS, DB_UNITS, DB_USER_DATA } from "../../../utils/staticValues";
 import { getAuth } from "firebase/auth";
 import { history } from "../../../types/userType";
+import { Formik } from "formik";
 
 const SendHistory = (user: { uid: string }, unitId: number) => {
   const [userData, userDataLoading, userDataError] = useDocument(
@@ -82,7 +83,7 @@ const RenderDetail = ({ unitId }) => {
           <h1>{`Unit ${unitId}`}</h1>
           <hr />
           <h2>単語帳</h2>
-          <h4>右のカードの日本語の意味は？</h4>
+
           <FlashCards unitData={vocab} />
 
           <hr />
@@ -90,7 +91,7 @@ const RenderDetail = ({ unitId }) => {
             <h2>Study Modes</h2>
           </Row>
           <Row>
-            <Col xs="3" className="m-1">
+            <Col className="m-1">
               <Link
                 href={{
                   pathname: "vocabulary/quiz",
@@ -107,7 +108,7 @@ const RenderDetail = ({ unitId }) => {
             </Col>
           </Row>
           <Row>
-            <Col xs="3" className="m-1">
+            <Col className="m-1">
               <Link
                 href={{
                   pathname: "vocabulary/quiz",
@@ -125,6 +126,12 @@ const RenderDetail = ({ unitId }) => {
           </Row>
 
           <hr />
+          <Row className="mb-2">
+            <Col>
+              <h2>単語リスト</h2>
+            </Col>
+          </Row>
+
           <VocabList unitData={vocab} unitId={unitId} />
         </>
       ) : (

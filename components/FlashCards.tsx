@@ -56,8 +56,11 @@ const FlashCards = ({ unitData }) => {
 
   return (
     <>
-      <Row className="justify-content-end">
-        <Col xs="3">
+      <Row className="justify-content-between">
+        <Col>
+          <h4>右のカードの日本語の意味は？</h4>
+        </Col>
+        <Col sm="2">
           <FormControlLabel
             control={
               <Switch
@@ -67,7 +70,7 @@ const FlashCards = ({ unitData }) => {
               />
             }
             label="Random"
-            labelPlacement="start"
+            labelPlacement="end"
           />
         </Col>
       </Row>
