@@ -1,6 +1,7 @@
 import { getAuth, signOut } from "firebase/auth";
 import Link from "next/link";
 import React, { useState } from "react";
+import { useAuthState, useSignInWithGoogle } from "react-firebase-hooks/auth";
 
 import {
   Navbar,
@@ -15,13 +16,14 @@ import {
   PopoverBody,
 } from "reactstrap";
 
-//regular import gives warning (due to typescript)
+//i- regular import gives warning (due to typescript)
 const styles = require("../styles/Header.module.css");
 
 const Header = () => {
-  // const [user, loading, error] = useAuthState(getAuth());
   const [menuOpen, setMenuOpen] = useState(false);
-  const user = getAuth().currentUser;
+  const [signInWithGoogle] = useSignInWithGoogle(getAuth());
+  const [user] = useAuthState(getAuth());
+
   return (
     <Navbar light className={styles.nav} sticky="top" expand="md">
       <NavbarBrand className="ms-3" href="/">
@@ -80,11 +82,13 @@ const Header = () => {
             </UncontrolledPopover>
           </NavbarText>
         )}
-        {/* {!loading && !user && (
+        {!user && (
           <NavbarText>
-            <button className={styles.user_icon}>Login</button>
+            <button className="me-5" onClick={() => signInWithGoogle()}>
+              Login
+            </button>
           </NavbarText>
-        )} */}
+        )}
       </Collapse>
     </Navbar>
   );
