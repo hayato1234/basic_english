@@ -58,6 +58,7 @@ const Home = () => {
   const dashBoard = (
     <Container>
       {user && <h1>Welcome back {user?.displayName}!</h1>}
+      <hr />
       <h2>Go to...</h2>
       <Row>
         <Col md="4">

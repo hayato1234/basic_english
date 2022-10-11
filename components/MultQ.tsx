@@ -19,8 +19,12 @@ import { getOneMeaningForOne } from "../utils/getMeaning";
 import { db } from "../utils/initAuth";
 import { UNITS, DB_UNITS, DB_USER_DATA } from "../utils/staticValues";
 import ErrorMessage from "./ErrorMessage";
+import Link from "next/link";
 
 const RenderQuiz = ({ vocabsData, inOrder, unitId, currUser }) => {
+  const [userData] = currUser
+    ? useDocument(doc(db, DB_USER_DATA, currUser.uid), {})
+    : [];
   const [vocabs, setVocabs] = useState(
     vocabsData.data()
       ? inOrder
@@ -120,10 +124,6 @@ const RenderQuiz = ({ vocabsData, inOrder, unitId, currUser }) => {
 
   // -----------------------upload missed-----------------------------------------------
   const uploadMissedVocab = async (vocabId: number) => {
-    const [userData, userDataLoading, userDataError] = useDocument(
-      doc(db, DB_USER_DATA, currUser.uid),
-      {}
-    );
     if (userData !== undefined && userData.data() !== undefined) {
       const unitField = "unit" + unitId;
       if (userData.data()?.vocab) {
@@ -301,9 +301,11 @@ const RenderQuiz = ({ vocabsData, inOrder, unitId, currUser }) => {
           <Button color="primary" onClick={retry}>
             Try Again
           </Button>{" "}
-          <Button color="secondary" onClick={toggleModal}>
-            Cancel
-          </Button>
+          <Link href="/vocabulary/[unit]" as={`/vocabulary/${unitId}`} passHref>
+            <Button color="secondary" onClick={toggleModal}>
+              End
+            </Button>
+          </Link>
         </ModalFooter>
       </Modal>
       {/* ------------ result Modal ------------------- */}
