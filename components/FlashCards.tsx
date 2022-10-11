@@ -11,13 +11,13 @@ import { PARTS_LIST, PARTS_TO_JPN } from "../utils/staticValues";
 const styles = require("../styles/Vocab.module.css");
 
 const FlashCards = ({ unitData }) => {
-  const [vocabs, setVocabs] = useState(unitData?.data().list);
+  const [vocabs, setVocabs] = useState(
+    unitData.data() ? unitData.data().list : null
+  );
 
   const [leftIndex, setLeftIndex] = useState(0);
-  const lastIndex = vocabs.length - 1;
-
   const [randomize, setRandomize] = useState(false);
-  if (!unitData) {
+  if (!vocabs) {
     return (
       <>
         <h1>Error</h1>
@@ -28,6 +28,7 @@ const FlashCards = ({ unitData }) => {
     );
   }
 
+  const lastIndex = vocabs.length - 1;
   const label = { inputProps: { "aria-label": "randomize order" } };
   const handleRandomize = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRandomize(event.target.checked);

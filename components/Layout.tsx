@@ -1,5 +1,4 @@
 import React from "react";
-// import Header from "./headerComponent";
 import Header from "./HeaderComponent";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "font-awesome/css/font-awesome.css";

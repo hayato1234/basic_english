@@ -5,6 +5,16 @@ import Link from "next/link";
 const styles = require("../styles/Vocab.module.css");
 
 const VocabList = ({ unitData, unitId }) => {
+  if (!unitData.data() || !unitId) {
+    return (
+      <>
+        <h1>Error</h1>
+        <Link href="/">
+          <button>Reload</button>
+        </Link>
+      </>
+    );
+  }
   const vocabs: Vocab[] = unitData.data().list;
 
   return (

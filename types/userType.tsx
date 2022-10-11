@@ -1,11 +1,11 @@
 export interface userData {
-  history: string[];
+  history: history[];
   vocabData: vocabData;
 }
 
 export interface history {
   type: string;
-  unit: string[];
+  unitData: string[];
 }
 
 export interface vocabData {

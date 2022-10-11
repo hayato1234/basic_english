@@ -8,6 +8,7 @@ import { doc } from "firebase/firestore";
 import { useDocument } from "react-firebase-hooks/firestore";
 import { db } from "../utils/initAuth";
 import { DB_USER_DATA, UNITS } from "../utils/staticValues";
+import { history } from "../types/userType";
 
 const user = () => {
   const currUser = getAuth().currentUser;
@@ -62,6 +63,7 @@ const user = () => {
       ) : (
         <>
           <h1>Profile</h1>
+          <hr />
           <Row style={{ display: "flex", alignItems: "center" }}>
             <Col md="1">
               {user.photoURL && (
@@ -77,7 +79,12 @@ const user = () => {
           </Row>
           <hr />
           <h2>History Data</h2>
-          {userData && <p>{userData.data()?.history.type.unit[0]}</p>}
+          {userData?.data() &&
+            userData
+              .data()
+              ?.history.map((h: history) => (
+                <span className="me-2 border border-primary">{`${h.type} - ${h.unitData[0]}`}</span>
+              ))}
           <hr />
           <h2>Vocabulary Data</h2>
           <h5>お気に入り</h5>
@@ -90,6 +97,7 @@ const user = () => {
           </Row>
           <hr />
           <h2>Grammar Data</h2>
+          <p>-</p>
         </>
       )}
     </Container>

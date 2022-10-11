@@ -21,15 +21,12 @@ import { UNITS, DB_UNITS, DB_USER_DATA } from "../utils/staticValues";
 import ErrorMessage from "./ErrorMessage";
 
 const RenderQuiz = ({ vocabsData, inOrder, unitId, currUser }) => {
-  // const [user, loading, error] = useAuthState(getAuth());
-
-  const [userData, userDataLoading, userDataError] = useDocument(
-    doc(db, DB_USER_DATA, currUser.uid),
-    {}
-  );
-  // userData && console.log(userData.data());
   const [vocabs, setVocabs] = useState(
-    inOrder ? vocabsData.data().list : shuffle(vocabsData.data().list)
+    vocabsData.data()
+      ? inOrder
+        ? vocabsData.data().list
+        : shuffle(vocabsData.data().list)
+      : []
   );
   const [currentId, setCurrentId] = useState(0);
   const [currentVocab, setCurrentVocab] = useState(vocabs[currentId]);
@@ -42,9 +39,11 @@ const RenderQuiz = ({ vocabsData, inOrder, unitId, currUser }) => {
   const [showNext, setShowNext] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
 
-  useEffect(() => setChoices(getChoices()), [currentId]);
+  useEffect(() => {
+    if (vocabsData.data()) setChoices(getChoices());
+  }, [currentId]);
 
-  if (vocabsData === undefined)
+  if (!vocabsData.data())
     return (
       <ErrorMessage message="unexpected error happened" backURL="/vocabulary" />
     );
@@ -121,6 +120,10 @@ const RenderQuiz = ({ vocabsData, inOrder, unitId, currUser }) => {
 
   // -----------------------upload missed-----------------------------------------------
   const uploadMissedVocab = async (vocabId: number) => {
+    const [userData, userDataLoading, userDataError] = useDocument(
+      doc(db, DB_USER_DATA, currUser.uid),
+      {}
+    );
     if (userData !== undefined && userData.data() !== undefined) {
       const unitField = "unit" + unitId;
       if (userData.data()?.vocab) {
@@ -313,8 +316,7 @@ const MultQ = ({ unitId, inOrder }) => {
     doc(db, DB_UNITS, `unit${unitId}`),
     {}
   );
-  const user =
-    getAuth().currentUser !== null ? getAuth().currentUser : { uid: "" };
+  const user = getAuth().currentUser;
 
   if (unitId < 0 || unitId > UNITS.length - 1) {
     return <p>{`${unitId} doesn't exist`}</p>;
