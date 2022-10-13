@@ -24,11 +24,12 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [signInWithGoogle] = useSignInWithGoogle(getAuth());
   const [user] = useAuthState(getAuth());
+  user && console.log("photo", user.photoURL);
 
   return (
     <Navbar light className={styles.nav} sticky="top" expand="md">
       <NavbarBrand className="ms-3" href="/">
-        <h1 className="pt-2">Basic English</h1>
+        <h1 className="pt-2">Work with English</h1>
       </NavbarBrand>
       <NavbarToggler onClick={() => setMenuOpen(!menuOpen)} />
       <Collapse isOpen={menuOpen} navbar>
@@ -55,7 +56,7 @@ const Header = () => {
               <img
                 src={user.photoURL}
                 className={styles.user_icon}
-                alt="user icon"
+                alt="icon"
               />
             </a>
 

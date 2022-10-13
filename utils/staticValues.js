@@ -20,3 +20,8 @@ export const PARTS_LIST = [
   "prep",
   "conn",
 ];
+
+export const STUDY_TITLES = {
+  vocabulary: "単語-vocabulary",
+  grammar: "文法-grammar",
+};

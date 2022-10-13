@@ -7,7 +7,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useDocument } from "react-firebase-hooks/firestore";
 
 import { db } from "../utils/initAuth";
-import { DB_USER_DATA } from "../utils/staticValues";
+import { DB_USER_DATA, STUDY_TITLES } from "../utils/staticValues";
 import SignInScreen from "../components/FirebaseAuth";
 import Link from "next/link";
 import { history } from "../types/userType";
@@ -35,8 +35,16 @@ const RecentStudies = ({ user }: { user: User }) => {
             as={`${historyType}/${historyUnit.replace("unit", "")}`}
             passHref
           >
-            <Card className={styles.card}>
-              <CardHeader>{historyType}</CardHeader>
+            <Card
+              className={
+                historyType === "vocabulary" ? styles.card_vs : styles.card_gr
+              }
+            >
+              <CardHeader>
+                {historyType === "vocabulary"
+                  ? STUDY_TITLES.vocabulary
+                  : STUDY_TITLES.grammar}
+              </CardHeader>
               <CardBody>{historyUnit}</CardBody>
             </Card>
           </Link>
@@ -60,16 +68,16 @@ const Home = () => {
       <Row>
         <Col md="4">
           <Link href="/vocabulary">
-            <Card className={styles.card}>
-              <CardHeader>単語</CardHeader>
+            <Card className={`${styles.card_vs}`}>
+              <CardHeader>{STUDY_TITLES.vocabulary}</CardHeader>
               <CardBody>TOEICに必要な単語をUnitごとに勉強しよう！</CardBody>
             </Card>
           </Link>
         </Col>
         <Col md="4">
           <Link href="/grammar">
-            <Card className={styles.card}>
-              <CardHeader>文法</CardHeader>
+            <Card className={styles.card_gr}>
+              <CardHeader>{STUDY_TITLES.grammar}</CardHeader>
               <CardBody>
                 基礎英文法を中心に、トピックごとに学習しよう！
               </CardBody>

@@ -28,7 +28,7 @@ const RenderUserPage = ({ user }: { user: User }) => {
         return <p key={unit}>{`Unit${unit} : ${missed}`}</p>;
       })
     ) : (
-      <p>-</p>
+      <p key="no-unit">-</p>
     );
 
   //i- return fav data for each unit that exists, return "-" if no fav found at all

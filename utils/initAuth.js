@@ -14,16 +14,6 @@ const clientCredential = {
 const app = initializeApp(clientCredential);
 export const db = getFirestore(app);
 
-export const addNewUnit = async () => {
-  if (user) {
-    await setDoc(doc(db, "unit_data", "test"), {
-      test1: "test1",
-    });
-  } else {
-    console.log("user need to login");
-  }
-};
-
 // enableIndexedDbPersistence(db).catch((err) => {
 //   if (err.code == "failed-precondition") {
 //     // Multiple tabs open, persistence can only be enabled
@@ -35,6 +25,16 @@ export const addNewUnit = async () => {
 //     // ...
 //   }
 // });
-// Subsequent queries will use persistence, if it was enabled successfully
+// // Subsequent queries will use persistence, if it was enabled successfully
+
+export const addNewUnit = async () => {
+  if (user) {
+    await setDoc(doc(db, "unit_data", "test"), {
+      test1: "test1",
+    });
+  } else {
+    console.log("user need to login");
+  }
+};
 
 export default app;
