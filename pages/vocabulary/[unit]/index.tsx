@@ -70,6 +70,8 @@ const RenderDetail = ({ unitId }) => {
     {}
   );
 
+  const match = useRouter().pathname;
+
   return (
     <Container className="pt-4">
       <Link href="/vocabulary">
@@ -93,7 +95,7 @@ const RenderDetail = ({ unitId }) => {
             <Col className="m-1">
               <Link
                 href={{
-                  pathname: "vocabulary/quiz",
+                  pathname: "/vocabulary/quiz",
                   query: {
                     unitId: unitId,
                     mode: Modes.Multiple,
@@ -110,7 +112,7 @@ const RenderDetail = ({ unitId }) => {
             <Col className="m-1">
               <Link
                 href={{
-                  pathname: "vocabulary/quiz",
+                  pathname: "/vocabulary/quiz",
                   query: {
                     unitId: unitId,
                     mode: Modes.Multiple,
