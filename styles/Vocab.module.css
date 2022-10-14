@@ -1,3 +1,7 @@
+.unit_body {
+  height: 100%;
+}
+
 .container {
   border: 1px solid black;
   border-radius: 10px;
@@ -9,21 +13,6 @@
   margin: 10px;
   cursor: pointer;
   min-height: 200px;
-}
-
-.card_vs {
-  margin: 10px;
-  cursor: pointer;
-  min-height: 200px;
-  background-image: url("/assets/images/blue.jpg");
-  background-size: cover;
-}
-
-.card_gr {
-  margin: 10px;
-  cursor: pointer;
-  min-height: 200px;
-  background-image: url("/assets/images/white-washi.jpg");
 }
 
 .container:hover,

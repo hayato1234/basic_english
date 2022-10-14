@@ -8,7 +8,7 @@ import { Button, Col, Container, Row } from "reactstrap";
 import VocabList from "../../../components/VocabList";
 import FlashCards from "../../../components/FlashCards";
 
-import { Modes } from "./quiz";
+import { Modes } from "../quiz";
 import { db } from "../../../utils/initAuth";
 import { UNITS, DB_UNITS, DB_USER_DATA } from "../../../utils/staticValues";
 import { getAuth } from "firebase/auth";

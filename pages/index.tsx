@@ -28,18 +28,14 @@ const RecentStudies = ({ user }: { user: User }) => {
       const historyType = history[i].type;
       const historyUnit = history[i].unitData[0];
       recentCards.push(
-        <Col key={historyType + historyUnit} md="3">
+        <Col key={historyType + historyUnit} sm="6" md="4" lg="3">
           <Link
             role="button"
             href="/[type]/[unit]"
             as={`${historyType}/${historyUnit.replace("unit", "")}`}
             passHref
           >
-            <Card
-              className={
-                historyType === "vocabulary" ? styles.card_vs : styles.card_gr
-              }
-            >
+            <Card className={styles.card}>
               <CardHeader>
                 {historyType === "vocabulary"
                   ? STUDY_TITLES.vocabulary
@@ -66,17 +62,17 @@ const Home = () => {
       <hr />
       <h2>Go to...</h2>
       <Row>
-        <Col md="4">
+        <Col sm="6" md="4" lg="3">
           <Link href="/vocabulary">
-            <Card className={`${styles.card_vs}`}>
+            <Card className={`${styles.card}`}>
               <CardHeader>{STUDY_TITLES.vocabulary}</CardHeader>
               <CardBody>TOEICに必要な単語をUnitごとに勉強しよう！</CardBody>
             </Card>
           </Link>
         </Col>
-        <Col md="4">
+        <Col sm="6" md="4" lg="3">
           <Link href="/grammar">
-            <Card className={styles.card_gr}>
+            <Card className={styles.card}>
               <CardHeader>{STUDY_TITLES.grammar}</CardHeader>
               <CardBody>
                 基礎英文法を中心に、トピックごとに学習しよう！

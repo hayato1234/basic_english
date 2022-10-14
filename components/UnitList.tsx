@@ -16,6 +16,7 @@ import { db } from "../utils/initAuth";
 import { Vocab } from "../types/vocabType";
 import Link from "next/link";
 import { UNITS, DB_UNITS } from "../utils/staticValues";
+import { Modes } from "../pages/vocabulary/quiz";
 
 const styles = require("../styles/Vocab.module.css");
 
@@ -60,79 +61,94 @@ const UnitList = () => {
   );
 
   return (
-    <div>
-      <Container>
+    <Container>
+      <Row>
+        <Col md="4" sm="6">
+          <Link
+            href={{
+              pathname: "vocabulary/quiz",
+              query: {
+                unitId: 1,
+                mode: Modes.MultipleAssess,
+                inOrder: true,
+              },
+            }}
+            passHref
+          >
+            <Card className={styles.card}>
+              <CardHeader>Level Assessment</CardHeader>
+              <CardBody>
+                <CardTitle tag="p">
+                  どのユニットから始めたらいいかわからない？
+                  自分のレベルを確認しよう！
+                </CardTitle>
+              </CardBody>
+            </Card>
+          </Link>
+        </Col>
+      </Row>
+      <hr />
+      {unitsDataLoading ? (
         <Row>
-          <Col md={6}>
-            {unitsDataLoading ? (
-              <h5>Loading...</h5>
-            ) : unitsData ? (
-              <UnitTiles unitData={unitsData.docs[0]} unitId={UNITS[0]} />
-            ) : (
-              <h5>{`Error loading: ${unitsDataError}`}</h5>
-            )}
-          </Col>
-          <Col md={6}>
-            {unitsDataLoading ? (
-              <></>
-            ) : unitsData ? (
-              <UnitTiles unitData={unitsData.docs[1]} unitId={UNITS[1]} />
-            ) : (
-              <></>
-            )}
-          </Col>
+          <h5>Loading...</h5>
         </Row>
-        <Row>
-          <Col md={6}>
-            {unitsDataLoading ? (
-              <></>
-            ) : unitsData ? (
-              <UnitTiles unitData={unitsData.docs[2]} unitId={UNITS[2]} />
-            ) : (
-              <></>
-            )}
-          </Col>
-          <Col md={6}>
-            {unitsDataLoading ? (
-              <></>
-            ) : unitsData ? (
-              <UnitTiles unitData={unitsData.docs[3]} unitId={UNITS[3]} />
-            ) : (
-              <></>
-            )}
-          </Col>
-        </Row>
-        <Row>
-          <Col md={6}>
-            {unitsDataLoading ? (
-              <></>
-            ) : unitsData ? (
-              <UnitTiles unitData={unitsData.docs[4]} unitId={UNITS[4]} />
-            ) : (
-              <></>
-            )}
-          </Col>
-          <Col md={6}>
-            {unitsDataLoading ? (
-              <></>
-            ) : unitsData ? (
-              <UnitTiles unitData={unitsData.docs[5]} unitId={UNITS[5]} />
-            ) : (
-              <></>
-            )}
-          </Col>
-        </Row>
-        <Row>
-          <Col md={6}>
-            {unitsDataLoading ? (
-              <></>
-            ) : (
+      ) : unitsData ? (
+        <>
+          <Row>
+            <Col md="4" sm="6">
+              {unitsData.docs[0] ? (
+                <UnitTiles unitData={unitsData.docs[0]} unitId={UNITS[0]} />
+              ) : (
+                <h5>{`Error loading: ${unitsDataError}`}</h5>
+              )}
+            </Col>
+            <Col md="4" sm="6">
+              {unitsData.docs[1] ? (
+                <UnitTiles unitData={unitsData.docs[1]} unitId={UNITS[1]} />
+              ) : (
+                <></>
+              )}
+            </Col>
+            <Col md="4" sm="6">
+              {unitsData.docs[2] ? (
+                <UnitTiles unitData={unitsData.docs[2]} unitId={UNITS[2]} />
+              ) : (
+                <></>
+              )}
+            </Col>
+            <Col md="4" sm="6">
+              {unitsData.docs[3] ? (
+                <UnitTiles unitData={unitsData.docs[3]} unitId={UNITS[3]} />
+              ) : (
+                <></>
+              )}
+            </Col>
+            <Col md="4" sm="6">
+              {unitsData.docs[4] ? (
+                <UnitTiles unitData={unitsData.docs[4]} unitId={UNITS[4]} />
+              ) : (
+                <></>
+              )}
+            </Col>
+            <Col md="4" sm="6">
+              {unitsData.docs[5] ? (
+                <UnitTiles unitData={unitsData.docs[5]} unitId={UNITS[5]} />
+              ) : (
+                <></>
+              )}
+            </Col>
+          </Row>
+          <hr />
+          <Row>
+            <Col md="4" sm="6">
               <UnitTiles unitData={null} unitId={"単語を追加"} />
-            )}
-          </Col>
-        </Row>
-      </Container>
-    </div>
+            </Col>
+          </Row>
+        </>
+      ) : (
+        <h5>{`Error loading: ${unitsDataError}`}</h5>
+      )}
+    </Container>
   );
 };
 

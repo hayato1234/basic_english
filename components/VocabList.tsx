@@ -63,7 +63,7 @@ const VocabList = ({ unitData, unitId }) => {
         onSubmit={searchVocab}
         validate={validateSearchForm}
       >
-        <Form>
+        <Form className="mt-4">
           <FormGroup row className="m-1">
             <Col xs="8">
               <Field name="key" className="form-control" />

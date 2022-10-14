@@ -2,16 +2,20 @@ import { useRouter } from "next/router";
 import React from "react";
 import Link from "next/link";
 import { Container } from "reactstrap";
-import MultQ from "../../../../components/MultQ";
-import { UNITS } from "../../../../utils/staticValues";
+import MultQ from "../../../components/MultQ";
+import { UNITS } from "../../../utils/staticValues";
+import MultQA from "../../../components/MultQA";
 
 export enum Modes {
   Multiple,
+  MultipleAssess,
 }
 
 const ReturnMode = ({ mode, unitId, inOrder }) => {
   if (+mode === Modes.Multiple) {
     return <MultQ unitId={unitId} inOrder={inOrder} />;
+  } else if (+mode === Modes.MultipleAssess) {
+    return <MultQA />;
   }
   return <></>;
 };
@@ -20,7 +24,7 @@ const Quiz = () => {
   const router = useRouter();
   const { unitId, mode, inOrder } = router.query;
 
-  //return error if unitId is not 0~5
+  //i- return error if unitId is not 0~5
   if (unitId === undefined || +unitId < 0 || +unitId > UNITS.length - 1) {
     return <p>{unitId} doesn't exist</p>;
   }

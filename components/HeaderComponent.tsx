@@ -52,7 +52,7 @@ const Header = () => {
         </Nav>
         {user && user.photoURL && (
           <NavbarText>
-            <a id="userPhoto" role="button" className="p-3" href="#/">
+            <a id="userPhoto" role="button" href="/">
               <img
                 src={user.photoURL}
                 className={styles.user_icon}

@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { enableIndexedDbPersistence } from "firebase/firestore";
+// import { enableIndexedDbPersistence } from "firebase/firestore";
 
 const clientCredential = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_PUBLIC_API_KEY,
