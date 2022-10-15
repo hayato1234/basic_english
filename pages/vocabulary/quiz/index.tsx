@@ -5,19 +5,25 @@ import { Container } from "reactstrap";
 import MultQ from "../../../components/MultQ";
 import { UNITS } from "../../../utils/staticValues";
 import MultQA from "../../../components/MultQA";
+import MultQAllUnit from "../../../components/MultQAllUnit";
 
 export enum Modes {
   Multiple,
   MultipleAssess,
+  MultipleAllUnit,
 }
 
 const ReturnMode = ({ mode, unitId, inOrder }) => {
-  if (+mode === Modes.Multiple) {
-    return <MultQ unitId={unitId} inOrder={inOrder} />;
-  } else if (+mode === Modes.MultipleAssess) {
-    return <MultQA />;
+  switch (+mode) {
+    case Modes.Multiple:
+      return <MultQ unitId={unitId} inOrder={inOrder} />;
+    case Modes.MultipleAssess:
+      return <MultQA />;
+    case Modes.MultipleAllUnit:
+      return <MultQAllUnit />;
+    default:
+      return <></>;
   }
-  return <></>;
 };
 
 const Quiz = () => {
@@ -35,12 +41,6 @@ const Quiz = () => {
 
   return (
     <Container>
-      <Link href="/vocabulary/[unit]" as={`/vocabulary/${unitId}`}>
-        <i className="fa fa-arrow-left" aria-hidden="true" />
-      </Link>
-
-      <h1>Unit {unitId} - 選択クイズ</h1>
-      <hr />
       <ReturnMode mode={mode} unitId={unitId} inOrder={inOrder === "true"} />
     </Container>
   );

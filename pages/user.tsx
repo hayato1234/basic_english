@@ -38,7 +38,7 @@ const RenderUserPage = ({ user }: { user: User }) => {
         const unitName = "unit" + unit;
         if (userData.data()?.vocab.favorite[unitName]) {
           return (
-            <p>{`Unit${unit} : ${
+            <p key={unit}>{`Unit${unit} : ${
               userData.data()?.vocab.favorite[unitName]
             }`}</p>
           );

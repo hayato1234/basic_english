@@ -6,7 +6,6 @@ import { db } from "../utils/initAuth";
 import { DB_UNITS } from "../utils/staticValues";
 import {
   Button,
-  Col,
   List,
   ListGroup,
   ListGroupItem,
@@ -25,26 +24,18 @@ import { shuffle } from "../utils/arraySort";
 const RenderQuiz = ({ originalVocabs }) => {
   const [vocabs, setVocabs] = useState(originalVocabs);
   const [currentId, setCurrentId] = useState(0);
-  const [currentUnit, setCurrentUnit] = useState(1);
-  const [currentVocab, setCurrentVocab] = useState(
-    vocabs[currentUnit][currentId]
-  );
-  // console.log(currentVocab);
-  const [choices, setChoices] = useState(
-    getChoices(currentVocab, vocabs[currentUnit], 5)
-  );
+  const [currentVocab, setCurrentVocab] = useState(vocabs[currentId]);
+  const [choices, setChoices] = useState(getChoices(currentVocab, vocabs, 5));
   const [userChoices, setUserChoices] = useState<QuestionData[]>([]);
-  const [numOfQs, setNumOfQs] = useState(25);
+  const [numOfQs, setNumOfQs] = useState(20);
 
   const [showAnswer, setShowAnswer] = useState(false);
   const [showNext, setShowNext] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
 
-  console.log(currentId);
   useEffect(() => {
-    setCurrentVocab(vocabs[currentUnit][currentId]);
-    setChoices(getChoices(currentVocab, vocabs[currentUnit], 5));
-    // console.log(currentVocab, choices);
+    setCurrentVocab(vocabs[currentId]);
+    setChoices(getChoices(currentVocab, vocabs, 5));
   }, [currentId]);
 
   const handleAnswer = (
@@ -72,36 +63,13 @@ const RenderQuiz = ({ originalVocabs }) => {
     if (!(currentId + 1 >= numOfQs)) setShowNext(true);
   };
   const goNext = () => {
-    const correctCount = userChoices.reduce((a, c) => {
-      if (c.gotCorrect) return a + 1;
-      else return a;
-    }, 0);
-    if (correctCount > 5 * currentUnit - 1) {
-      // setCurrentId(currentId);
-      // setChoices(getChoices(currentVocab, vocabs[currentUnit], 5));
-      console.log("upping unit");
-      setCurrentId(currentId + 1);
-      setCurrentUnit(currentUnit + 1);
-      setCurrentVocab(vocabs[currentUnit + 1][currentId + 1]);
-      setChoices(
-        getChoices(
-          vocabs[currentUnit + 1][currentId + 1],
-          vocabs[currentUnit + 1],
-          5
-        )
-      );
-      // console.log("id", currentId);
-      // console.log(currentVocab, choices);
-    } else {
-      setCurrentId(currentId + 1);
-      setCurrentVocab(vocabs[currentUnit][currentId + 1]);
-    }
+    setCurrentId(currentId + 1);
+    setCurrentVocab(vocabs[currentId + 1]);
     setShowAnswer(false);
     setShowNext(false);
   };
-
   const retry = () => {
-    // setVocabs(shuffle(vocabs[currentUnit]));
+    setVocabs(shuffle(vocabs));
     setCurrentId(0);
     setShowAnswer(false);
     setShowNext(false);
@@ -121,7 +89,7 @@ const RenderQuiz = ({ originalVocabs }) => {
       <Link href="/vocabulary">
         <i className="fa fa-arrow-left" aria-hidden="true" />
       </Link>
-      <h1>自己診断クイズ</h1>
+      <h1>全単語テスト</h1>
       <hr />
       <p>{`${currentId + 1} / ${numOfQs}`}</p>
       <h1>{currentVocab.en}</h1>
@@ -158,16 +126,8 @@ const RenderQuiz = ({ originalVocabs }) => {
           </li>
         ))}
       </List>
-      <Row className="justify-content-between mx-1">
-        <Col xs="2">{showNext && <Button onClick={goNext}>Next</Button>}</Col>
-        <Col xs="2">
-          {currentId !== 0 ? (
-            <Button onClick={finish}>
-              {currentId < numOfQs - 1 ? "Quit" : "See Result"}
-            </Button>
-          ) : null}
-        </Col>
-      </Row>
+      {showNext && <Button onClick={goNext}>Next</Button>}
+      {currentId !== 0 && <Button onClick={finish}>Quit</Button>}
 
       {/* ------------ result Modal ------------------- */}
       <Modal isOpen={isModalOpen} toggle={toggleModal}>
@@ -176,9 +136,6 @@ const RenderQuiz = ({ originalVocabs }) => {
           <p>{`Score : ${userChoices.reduce((a, c) => {
             return c.gotCorrect ? a + 1 : a;
           }, 0)} / ${userChoices.length}`}</p>
-          <p>
-            おすすめのレベルはUnit{currentUnit - 1}またはUnit{currentUnit}
-          </p>
           <ListGroup>
             {userChoices.map((c) => {
               return (
@@ -229,23 +186,22 @@ const RenderQuiz = ({ originalVocabs }) => {
   );
 };
 
-const MultQA = ({}) => {
+const MultQAllUnit = ({}) => {
   const [unitsData, unitsDataLoading, unitsDataError] = useCollection(
     collection(db, DB_UNITS),
     {}
   );
   const unitsDataDocs = unitsData ? unitsData.docs : null;
 
-  let allUnitsAsArray =
+  let allVocabData =
     unitsDataDocs &&
     unitsDataDocs.reduce((a, c) => {
       if (c.data()) {
-        const b: Vocab[] = shuffle(c.data().list);
-        // const b: Vocab[] = c.data().list;
-        return [...a, b];
+        const b: Vocab[] = c.data().list;
+        return [...a, ...b];
       }
       return [...a];
-    }, [] as Vocab[][]);
+    }, [] as Vocab[]);
 
   return (
     <div>
@@ -253,10 +209,9 @@ const MultQA = ({}) => {
         <Row>
           <h5>Loading...</h5>
         </Row>
-      ) : allUnitsAsArray ? (
+      ) : allVocabData ? (
         <>
-          {" "}
-          <RenderQuiz originalVocabs={allUnitsAsArray} />{" "}
+          <RenderQuiz originalVocabs={shuffle(allVocabData)} />
         </>
       ) : (
         <p>Error loading</p>
@@ -265,4 +220,4 @@ const MultQA = ({}) => {
   );
 };
 
-export default MultQA;
+export default MultQAllUnit;

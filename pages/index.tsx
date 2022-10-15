@@ -11,6 +11,7 @@ import { DB_USER_DATA, STUDY_TITLES } from "../utils/staticValues";
 import SignInScreen from "../components/FirebaseAuth";
 import Link from "next/link";
 import { history } from "../types/userType";
+import { Modes } from "./vocabulary/quiz";
 
 const styles = require("../styles/Vocab.module.css");
 
@@ -67,6 +68,27 @@ const Home = () => {
             <Card className={`${styles.card}`}>
               <CardHeader>{STUDY_TITLES.vocabulary}</CardHeader>
               <CardBody>TOEICに必要な単語をUnitごとに勉強しよう！</CardBody>
+            </Card>
+          </Link>
+        </Col>
+        <Col sm="6" md="4" lg="3">
+          <Link
+            href={{
+              pathname: "vocabulary/quiz",
+              query: {
+                unitId: 1,
+                mode: Modes.MultipleAssess,
+                inOrder: true,
+              },
+            }}
+            passHref
+          >
+            <Card className={styles.card}>
+              <CardHeader>Level Assessment</CardHeader>
+              <CardBody>
+                自己診断：
+                どのユニットから始めるか自分のレベルを確認しよう！(何度でも挑戦可)
+              </CardBody>
             </Card>
           </Link>
         </Col>

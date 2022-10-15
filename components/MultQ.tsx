@@ -452,6 +452,13 @@ const RenderQuizWithoutUser = ({ vocabsData, inOrder, unitId }) => {
 
   return (
     <>
+      <h1>
+        <Link href="/vocabulary/[unit]" as={`/vocabulary/${unitId}`}>
+          <i className="fa fa-arrow-left" aria-hidden="true" />
+        </Link>{" "}
+        Unit {unitId} - 選択クイズ
+      </h1>
+      <hr />
       <p>{`${currentId + 1} / ${numOfQs}`}</p>
       <h1>{currentVocab.en}</h1>
       <List type="unstyled">
@@ -550,8 +557,8 @@ const MultQ = ({ unitId, inOrder }) => {
   }
 
   const user = getAuth().currentUser;
-  console.log(vocabsData);
-  console.log(user);
+  // console.log(vocabsData);
+  // console.log(user);
 
   return (
     <>

@@ -24,7 +24,6 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [signInWithGoogle] = useSignInWithGoogle(getAuth());
   const [user] = useAuthState(getAuth());
-  user && console.log("photo", user.photoURL);
 
   return (
     <Navbar light className={styles.nav} sticky="top" expand="md">
@@ -52,7 +51,7 @@ const Header = () => {
         </Nav>
         {user && user.photoURL && (
           <NavbarText>
-            <a id="userPhoto" role="button" href="/">
+            <a id="userPhoto" role="button" href="#/">
               <img
                 src={user.photoURL}
                 className={styles.user_icon}
@@ -63,7 +62,7 @@ const Header = () => {
             <UncontrolledPopover
               target="userPhoto"
               placement="bottom"
-              trigger="legacy"
+              trigger="focus"
             >
               <PopoverBody>
                 <Link passHref href="/user">

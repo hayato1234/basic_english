@@ -79,8 +79,30 @@ const UnitList = () => {
               <CardHeader>Level Assessment</CardHeader>
               <CardBody>
                 <CardTitle tag="p">
-                  どのユニットから始めたらいいかわからない？
-                  自分のレベルを確認しよう！
+                  自己診断：
+                  どのユニットから始めるか自分のレベルを確認しよう！(何度でも挑戦可)
+                </CardTitle>
+              </CardBody>
+            </Card>
+          </Link>
+        </Col>
+        <Col md="4" sm="6">
+          <Link
+            href={{
+              pathname: "vocabulary/quiz",
+              query: {
+                unitId: 1,
+                mode: Modes.MultipleAllUnit,
+                inOrder: true,
+              },
+            }}
+            passHref
+          >
+            <Card className={styles.card}>
+              <CardHeader>All Units</CardHeader>
+              <CardBody>
+                <CardTitle tag="p">
+                  全てのUnitの単語が混ざったクイズに挑戦
                 </CardTitle>
               </CardBody>
             </Card>
@@ -95,42 +117,42 @@ const UnitList = () => {
       ) : unitsData ? (
         <>
           <Row>
-            <Col md="4" sm="6">
+            <Col sm="6" md="4" lg="3">
               {unitsData.docs[0] ? (
                 <UnitTiles unitData={unitsData.docs[0]} unitId={UNITS[0]} />
               ) : (
                 <h5>{`Error loading: ${unitsDataError}`}</h5>
               )}
             </Col>
-            <Col md="4" sm="6">
+            <Col sm="6" md="4" lg="3">
               {unitsData.docs[1] ? (
                 <UnitTiles unitData={unitsData.docs[1]} unitId={UNITS[1]} />
               ) : (
                 <></>
               )}
             </Col>
-            <Col md="4" sm="6">
+            <Col sm="6" md="4" lg="3">
               {unitsData.docs[2] ? (
                 <UnitTiles unitData={unitsData.docs[2]} unitId={UNITS[2]} />
               ) : (
                 <></>
               )}
             </Col>
-            <Col md="4" sm="6">
+            <Col sm="6" md="4" lg="3">
               {unitsData.docs[3] ? (
                 <UnitTiles unitData={unitsData.docs[3]} unitId={UNITS[3]} />
               ) : (
                 <></>
               )}
             </Col>
-            <Col md="4" sm="6">
+            <Col sm="6" md="4" lg="3">
               {unitsData.docs[4] ? (
                 <UnitTiles unitData={unitsData.docs[4]} unitId={UNITS[4]} />
               ) : (
                 <></>
               )}
             </Col>
-            <Col md="4" sm="6">
+            <Col sm="6" md="4" lg="3">
               {unitsData.docs[5] ? (
                 <UnitTiles unitData={unitsData.docs[5]} unitId={UNITS[5]} />
               ) : (
@@ -140,7 +162,7 @@ const UnitList = () => {
           </Row>
           <hr />
           <Row>
-            <Col md="4" sm="6">
+            <Col sm="6" md="4" lg="3">
               <UnitTiles unitData={null} unitId={"単語を追加"} />
             </Col>
           </Row>
