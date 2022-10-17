@@ -18,8 +18,8 @@ const SignInScreen = () => {
         <Row>
           <Col>
             <h5 style={{ textAlign: "center" }}>
-              Register free or Login using a Google account to get personalized
-              learning experience!
+              Register free or Login using your Google account to get the
+              personalized learning experience!
             </h5>
           </Col>
         </Row>

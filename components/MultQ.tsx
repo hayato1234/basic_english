@@ -21,6 +21,8 @@ import { db } from "../utils/initAuth";
 import { UNITS, DB_UNITS, DB_USER_DATA } from "../utils/staticValues";
 import ErrorMessage from "./ErrorMessage";
 import Link from "next/link";
+import QuizFooter from "./QuizFooter";
+import QuizHeader from "./QuizHeader";
 
 /* -------------------------------------------------- render with user -------------------------------------- */
 const RenderQuizWithUser = ({ vocabsData, inOrder, unitId, currUser }) => {
@@ -454,26 +456,14 @@ const RenderQuizWithoutUser = ({ vocabsData, inOrder, unitId }) => {
 
   return (
     <>
-      <h1>
-        <Link href="/vocabulary/[unit]" as={`/vocabulary/${unitId}`}>
-          <i className="fa fa-arrow-left" aria-hidden="true" />
-        </Link>{" "}
-        Unit {unitId} - 選択クイズ
-      </h1>
-      <hr />
-      <Row>
-        <Col xs="3" className="me-auto">
-          <p>{`${currentId + 1} / ${numOfQs}`}</p>
-        </Col>
-        <Col xs="4" className="d-flex justify-content-end">
-          <Button size="sm" className="mx-1" color="danger">
-            <i className="fa fa-exclamation-circle" aria-hidden="true" />
-          </Button>
-          <Button size="sm" className="mx-1" color="secondary">
-            <i className="fa fa-cog" aria-hidden="true" />
-          </Button>
-        </Col>
-      </Row>
+      <QuizHeader
+        linkHref="/vocabulary/[unit]"
+        linkAs={`/vocabulary/${unitId}`}
+        title={`選択クイズ - Unit ${unitId}`}
+        currentId={currentId}
+        numOfQs={numOfQs}
+        setNumOfQs={setNumOfQs}
+      />
 
       <h1>{currentVocab.en}</h1>
       <List type="unstyled">
@@ -500,16 +490,13 @@ const RenderQuizWithoutUser = ({ vocabsData, inOrder, unitId }) => {
           </li>
         ))}
       </List>
-      <Row className="justify-content-between mx-1">
-        <Col xs="2">{showNext && <Button onClick={goNext}>Next</Button>}</Col>
-        <Col xs="2" className="d-flex justify-content-end">
-          {currentId !== 0 ? (
-            <Button onClick={finish}>
-              {currentId < numOfQs - 1 ? "Quit" : "See Result"}
-            </Button>
-          ) : null}
-        </Col>
-      </Row>
+      <QuizFooter
+        currentId={currentId}
+        showNext={showAnswer}
+        goNext={goNext}
+        finish={finish}
+        numOfQs={numOfQs}
+      />
 
       {/* ------------ result Modal ------------------- */}
       <Modal isOpen={isModalOpen} toggle={toggleModal}>

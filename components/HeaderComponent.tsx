@@ -25,6 +25,10 @@ const Header = () => {
   const [signInWithGoogle] = useSignInWithGoogle(getAuth());
   const [user] = useAuthState(getAuth());
 
+  const closeNav = () => {
+    setMenuOpen(false);
+  };
+
   return (
     <Navbar light className={styles.nav} sticky="top" expand="md">
       <NavbarBrand className="ms-3" href="/">
@@ -33,17 +37,17 @@ const Header = () => {
       <NavbarToggler onClick={() => setMenuOpen(!menuOpen)} />
       <Collapse isOpen={menuOpen} navbar>
         <Nav className="me-auto" navbar>
-          <NavItem>
+          <NavItem onClick={closeNav}>
             <Link passHref href={"/"}>
               <NavLink>Home</NavLink>
             </Link>
           </NavItem>
-          <NavItem>
+          <NavItem onClick={closeNav}>
             <Link passHref href={"/vocabulary"}>
               <NavLink>Vocabulary</NavLink>
             </Link>
           </NavItem>
-          <NavItem>
+          <NavItem onClick={closeNav}>
             <Link passHref href={"/grammar"}>
               <NavLink>Grammar</NavLink>
             </Link>

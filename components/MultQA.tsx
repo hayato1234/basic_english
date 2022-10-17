@@ -21,6 +21,8 @@ import { getChoices, checkAnswer } from "../utils/quizUtil";
 import { getAuth, User } from "firebase/auth";
 import Link from "next/link";
 import { shuffle } from "../utils/arraySort";
+import QuizFooter from "./QuizFooter";
+import QuizHeader from "./QuizHeader";
 
 const RenderQuiz = ({ originalVocabs }) => {
   const [vocabs, setVocabs] = useState(originalVocabs);
@@ -118,12 +120,14 @@ const RenderQuiz = ({ originalVocabs }) => {
 
   return (
     <>
-      <Link href="/vocabulary">
-        <i className="fa fa-arrow-left" aria-hidden="true" />
-      </Link>
-      <h1>自己診断クイズ</h1>
-      <hr />
-      <p>{`${currentId + 1} / ${numOfQs}`}</p>
+      <QuizHeader
+        linkHref="/vocabulary"
+        linkAs={null}
+        title="自己診断クイズ"
+        currentId={currentId}
+        numOfQs={numOfQs}
+        setNumOfQs={setNumOfQs}
+      />
       <h1>{currentVocab.en}</h1>
       <List type="unstyled">
         {choices.map((meaning) => (
@@ -158,16 +162,13 @@ const RenderQuiz = ({ originalVocabs }) => {
           </li>
         ))}
       </List>
-      <Row className="justify-content-between mx-1">
-        <Col xs="2">{showNext && <Button onClick={goNext}>Next</Button>}</Col>
-        <Col xs="2">
-          {currentId !== 0 ? (
-            <Button onClick={finish}>
-              {currentId < numOfQs - 1 ? "Quit" : "See Result"}
-            </Button>
-          ) : null}
-        </Col>
-      </Row>
+      <QuizFooter
+        currentId={currentId}
+        showNext={showNext}
+        goNext={goNext}
+        finish={finish}
+        numOfQs={numOfQs}
+      />
 
       {/* ------------ result Modal ------------------- */}
       <Modal isOpen={isModalOpen} toggle={toggleModal}>

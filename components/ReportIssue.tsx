@@ -8,6 +8,7 @@ import {
   Label,
   Col,
   Button,
+  ModalFooter,
 } from "reactstrap";
 
 const ReportIssue = ({ isModalOpen, toggleModal, data }) => {
@@ -20,20 +21,23 @@ const ReportIssue = ({ isModalOpen, toggleModal, data }) => {
     resetForm();
   };
   return (
-    <Modal isOpen={isModalOpen} toggleModal={toggleModal}>
-      <ModalHeader toggle={toggleModal}>間違えを報告</ModalHeader>
+    <Modal isOpen={isModalOpen} toggle={toggleModal}>
+      <ModalHeader toggle={toggleModal}>問題を報告</ModalHeader>
       <ModalBody>
+        <p>
+          送信ボタンを押すだけでもデーターは送られますが、「エラーがでた」、「クイズの答えが間違っている」など説明を書いてくれると助かります。
+        </p>
         <Formik initialValues={initialValues} onSubmit={handleSubmit}>
           <Form>
             <FormGroup row>
-              <Label>説明</Label>
+              <Label>説明（任意）</Label>
               <Col md="12">
                 <Field
                   name="comment"
                   as="textarea"
                   rows="12"
                   className="form-control"
-                ></Field>
+                />
               </Col>
             </FormGroup>
             <FormGroup row>
@@ -46,6 +50,11 @@ const ReportIssue = ({ isModalOpen, toggleModal, data }) => {
           </Form>
         </Formik>
       </ModalBody>
+      <ModalFooter>
+        <Button color="secondary" onClick={toggleModal}>
+          Cancel
+        </Button>
+      </ModalFooter>
     </Modal>
   );
 };
