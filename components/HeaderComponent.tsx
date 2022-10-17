@@ -28,7 +28,7 @@ const Header = () => {
   return (
     <Navbar light className={styles.nav} sticky="top" expand="md">
       <NavbarBrand className="ms-3" href="/">
-        <h1 className="pt-2">Work with English</h1>
+        <h1 className="pt-2">English 4.0</h1>
       </NavbarBrand>
       <NavbarToggler onClick={() => setMenuOpen(!menuOpen)} />
       <Collapse isOpen={menuOpen} navbar>

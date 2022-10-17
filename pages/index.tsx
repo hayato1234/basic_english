@@ -84,7 +84,7 @@ const Home = () => {
             passHref
           >
             <Card className={styles.card}>
-              <CardHeader>Level Assessment</CardHeader>
+              <CardHeader>単語 - Level Assessment</CardHeader>
               <CardBody>
                 自己診断：
                 どのユニットから始めるか自分のレベルを確認しよう！(何度でも挑戦可)

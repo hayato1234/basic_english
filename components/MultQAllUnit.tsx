@@ -6,6 +6,7 @@ import { db } from "../utils/initAuth";
 import { DB_UNITS } from "../utils/staticValues";
 import {
   Button,
+  Col,
   List,
   ListGroup,
   ListGroupItem,
@@ -126,8 +127,16 @@ const RenderQuiz = ({ originalVocabs }) => {
           </li>
         ))}
       </List>
-      {showNext && <Button onClick={goNext}>Next</Button>}
-      {currentId !== 0 && <Button onClick={finish}>Quit</Button>}
+      <Row className="justify-content-between mx-1">
+        <Col xs="2">{showNext && <Button onClick={goNext}>Next</Button>}</Col>
+        <Col xs="2" className="d-flex justify-content-end">
+          {currentId !== 0 ? (
+            <Button onClick={finish}>
+              {currentId < numOfQs - 1 ? "Quit" : "See Result"}
+            </Button>
+          ) : null}
+        </Col>
+      </Row>
 
       {/* ------------ result Modal ------------------- */}
       <Modal isOpen={isModalOpen} toggle={toggleModal}>

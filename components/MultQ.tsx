@@ -4,6 +4,7 @@ import { getAuth } from "firebase/auth";
 import { useDocument } from "react-firebase-hooks/firestore";
 import {
   Button,
+  Col,
   List,
   ListGroup,
   ListGroupItem,
@@ -11,6 +12,7 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Row,
 } from "reactstrap";
 import { Choice, QuestionData } from "../types/vocabType";
 import { shuffle } from "../utils/arraySort";
@@ -459,7 +461,20 @@ const RenderQuizWithoutUser = ({ vocabsData, inOrder, unitId }) => {
         Unit {unitId} - 選択クイズ
       </h1>
       <hr />
-      <p>{`${currentId + 1} / ${numOfQs}`}</p>
+      <Row>
+        <Col xs="3" className="me-auto">
+          <p>{`${currentId + 1} / ${numOfQs}`}</p>
+        </Col>
+        <Col xs="4" className="d-flex justify-content-end">
+          <Button size="sm" className="mx-1" color="danger">
+            <i className="fa fa-exclamation-circle" aria-hidden="true" />
+          </Button>
+          <Button size="sm" className="mx-1" color="secondary">
+            <i className="fa fa-cog" aria-hidden="true" />
+          </Button>
+        </Col>
+      </Row>
+
       <h1>{currentVocab.en}</h1>
       <List type="unstyled">
         {choices.map((meaning) => (
@@ -485,8 +500,16 @@ const RenderQuizWithoutUser = ({ vocabsData, inOrder, unitId }) => {
           </li>
         ))}
       </List>
-      {showNext && <Button onClick={goNext}>Next</Button>}
-      <Button onClick={finish}>Finish</Button>
+      <Row className="justify-content-between mx-1">
+        <Col xs="2">{showNext && <Button onClick={goNext}>Next</Button>}</Col>
+        <Col xs="2" className="d-flex justify-content-end">
+          {currentId !== 0 ? (
+            <Button onClick={finish}>
+              {currentId < numOfQs - 1 ? "Quit" : "See Result"}
+            </Button>
+          ) : null}
+        </Col>
+      </Row>
 
       {/* ------------ result Modal ------------------- */}
       <Modal isOpen={isModalOpen} toggle={toggleModal}>
