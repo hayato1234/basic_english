@@ -26,6 +26,7 @@
     "react-popper": "^2.3.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "^5.0.1",
+    "react-spring": "^9.5.5",
     "reactstrap": "^9.1.4",
     "stable": "^0.1.8",
     "typescript": "^4.7.4",

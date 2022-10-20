@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import { Card, CardBody, CardHeader, Col, Container, Row } from "reactstrap";
+import { useSpring, animated } from "react-spring";
 
 import { getAuth, User } from "firebase/auth";
 import { doc } from "firebase/firestore";
@@ -15,12 +16,21 @@ import { Modes } from "./vocabulary/quiz";
 
 const styles = require("../styles/Vocab.module.css");
 
-const RecentStudies = ({ user }: { user: User }) => {
+const RecentStudies = ({ user }) => {
   const [userData, userDataLoading, userDataError] = useDocument(
     doc(db, DB_USER_DATA, user.uid),
     {}
   );
   const recentCards: ReactNode[] = [];
+  const moveUpRecent = useSpring({
+    to: { opacity: 1, transform: "translateY(0px)" },
+    from: {
+      opacity: 0,
+      transform: "translateY(150px)",
+    },
+    delay: 200,
+    config: { friction: 40 },
+  });
 
   if (!userDataLoading && userData && userData.data()?.history) {
     const history: history[] = userData.data()?.history.reverse();
@@ -30,21 +40,23 @@ const RecentStudies = ({ user }: { user: User }) => {
       const historyUnit = history[i].unitData[0];
       recentCards.push(
         <Col key={historyType + historyUnit} sm="6" md="4" lg="3">
-          <Link
-            role="button"
-            href="/[type]/[unit]"
-            as={`${historyType}/${historyUnit.replace("unit", "")}`}
-            passHref
-          >
-            <Card className={styles.card}>
-              <CardHeader>
-                {historyType === "vocabulary"
-                  ? STUDY_TITLES.vocabulary
-                  : STUDY_TITLES.grammar}
-              </CardHeader>
-              <CardBody>{historyUnit}</CardBody>
-            </Card>
-          </Link>
+          <animated.div style={moveUpRecent}>
+            <Link
+              role="button"
+              href="/[type]/[unit]"
+              as={`${historyType}/${historyUnit.replace("unit", "")}`}
+              passHref
+            >
+              <Card className={styles.card}>
+                <CardHeader>
+                  {historyType === "vocabulary"
+                    ? STUDY_TITLES.vocabulary
+                    : STUDY_TITLES.grammar}
+                </CardHeader>
+                <CardBody>{historyUnit}</CardBody>
+              </Card>
+            </Link>
+          </animated.div>
         </Col>
       );
     }
@@ -57,6 +69,16 @@ const RecentStudies = ({ user }: { user: User }) => {
 const Home = () => {
   const [user, loading, error] = useAuthState(getAuth());
 
+  const moveUp = useSpring({
+    to: { opacity: 1, transform: "translateY(0px)" },
+    from: {
+      opacity: 0,
+      transform: "translateY(150px)",
+    },
+    delay: 200,
+    config: { friction: 40 },
+  });
+
   const dashBoard = (
     <Container>
       {user && <h1>Welcome back {user?.displayName}!</h1>}
@@ -64,43 +86,49 @@ const Home = () => {
       <h2>Go to...</h2>
       <Row>
         <Col sm="6" md="4" lg="3">
-          <Link href="/vocabulary">
-            <Card className={`${styles.card}`}>
-              <CardHeader>{STUDY_TITLES.vocabulary}</CardHeader>
-              <CardBody>TOEICに必要な単語をUnitごとに勉強しよう！</CardBody>
-            </Card>
-          </Link>
+          <animated.div style={moveUp}>
+            <Link href="/vocabulary">
+              <Card className={`${styles.card}`}>
+                <CardHeader>{STUDY_TITLES.vocabulary}</CardHeader>
+                <CardBody>TOEICに必要な単語をUnitごとに勉強しよう！</CardBody>
+              </Card>
+            </Link>
+          </animated.div>
         </Col>
         <Col sm="6" md="4" lg="3">
-          <Link
-            href={{
-              pathname: "vocabulary/quiz",
-              query: {
-                unitId: 1,
-                mode: Modes.MultipleAssess,
-                inOrder: true,
-              },
-            }}
-            passHref
-          >
-            <Card className={styles.card}>
-              <CardHeader>単語 - Level Assessment</CardHeader>
-              <CardBody>
-                自己診断：
-                どのユニットから始めるか自分のレベルを確認しよう！(何度でも挑戦可)
-              </CardBody>
-            </Card>
-          </Link>
+          <animated.div style={moveUp}>
+            <Link
+              href={{
+                pathname: "vocabulary/quiz",
+                query: {
+                  unitId: 1,
+                  mode: Modes.MultipleAssess,
+                  inOrder: true,
+                },
+              }}
+              passHref
+            >
+              <Card className={styles.card}>
+                <CardHeader>単語 - Level Assessment</CardHeader>
+                <CardBody>
+                  自己診断：
+                  どのユニットから始めるか自分のレベルを確認しよう！(何度でも挑戦可)
+                </CardBody>
+              </Card>
+            </Link>
+          </animated.div>
         </Col>
         <Col sm="6" md="4" lg="3">
-          <Link href="/grammar">
-            <Card className={styles.card}>
-              <CardHeader>{STUDY_TITLES.grammar}</CardHeader>
-              <CardBody>
-                基礎英文法を中心に、トピックごとに学習しよう！
-              </CardBody>
-            </Card>
-          </Link>
+          <animated.div style={moveUp}>
+            <Link href="/grammar">
+              <Card className={styles.card}>
+                <CardHeader>{STUDY_TITLES.grammar}</CardHeader>
+                <CardBody>
+                  基礎英文法を中心に、トピックごとに学習しよう！
+                </CardBody>
+              </Card>
+            </Link>
+          </animated.div>
         </Col>
       </Row>
       <h2>Recent</h2>

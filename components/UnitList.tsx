@@ -17,29 +17,41 @@ import { Vocab } from "../types/vocabType";
 import Link from "next/link";
 import { UNITS, DB_UNITS } from "../utils/staticValues";
 import { Modes } from "../pages/vocabulary/quiz";
+import { useSpring, animated } from "react-spring";
 
 const styles = require("../styles/Vocab.module.css");
 
 const UnitTiles = ({ unitData, unitId }) => {
   const vocabs: Vocab[] = unitData ? unitData.data().list : null;
+  const moveUpUnits = useSpring({
+    to: { opacity: 1, transform: "translateY(0px)" },
+    from: {
+      opacity: 0,
+      transform: "translateY(150px)",
+    },
+    delay: 200,
+    config: { friction: 40 },
+  });
 
   return (
     <>
       {vocabs ? (
-        <Link href="/vocabulary/[unit]" as={`/vocabulary/${unitId}`} passHref>
-          <Card className={styles.card}>
-            <CardHeader>{`Unit ${unitId}`}</CardHeader>
-            <CardBody>
-              <CardTitle tag="p">Examples:</CardTitle>
-              <CardText className="ms-2">
-                {vocabs[Math.floor(Math.random() * vocabs.length)].en}
-              </CardText>
-              <CardText className="ms-2">
-                {vocabs[Math.floor(Math.random() * vocabs.length)].en}
-              </CardText>
-            </CardBody>
-          </Card>
-        </Link>
+        <animated.div style={moveUpUnits}>
+          <Link href="/vocabulary/[unit]" as={`/vocabulary/${unitId}`} passHref>
+            <Card className={styles.card}>
+              <CardHeader>{`Unit ${unitId}`}</CardHeader>
+              <CardBody>
+                <CardTitle tag="p">Examples:</CardTitle>
+                <CardText className="ms-2">
+                  {vocabs[Math.floor(Math.random() * vocabs.length)].en}
+                </CardText>
+                <CardText className="ms-2">
+                  {vocabs[Math.floor(Math.random() * vocabs.length)].en}
+                </CardText>
+              </CardBody>
+            </Card>
+          </Link>
+        </animated.div>
       ) : (
         <>
           <Card className={styles.card}>
@@ -59,54 +71,67 @@ const UnitList = () => {
     collection(db, DB_UNITS),
     {}
   );
+  const moveUp = useSpring({
+    to: { opacity: 1, transform: "translateY(0px)" },
+    from: {
+      opacity: 0,
+      transform: "translateY(150px)",
+    },
+    delay: 200,
+    config: { friction: 40 },
+  });
 
   return (
     <Container>
       <Row>
         <Col md="4" sm="6">
-          <Link
-            href={{
-              pathname: "vocabulary/quiz",
-              query: {
-                unitId: 1,
-                mode: Modes.MultipleAssess,
-                inOrder: true,
-              },
-            }}
-            passHref
-          >
-            <Card className={styles.card}>
-              <CardHeader>Level Assessment</CardHeader>
-              <CardBody>
-                <CardTitle tag="p">
-                  自己診断：
-                  どのユニットから始めるか自分のレベルを確認しよう！(何度でも挑戦可)
-                </CardTitle>
-              </CardBody>
-            </Card>
-          </Link>
+          <animated.div style={moveUp}>
+            <Link
+              href={{
+                pathname: "vocabulary/quiz",
+                query: {
+                  unitId: 1,
+                  mode: Modes.MultipleAssess,
+                  inOrder: true,
+                },
+              }}
+              passHref
+            >
+              <Card className={styles.card}>
+                <CardHeader>Level Assessment</CardHeader>
+                <CardBody>
+                  <CardTitle tag="p">
+                    自己診断：
+                    どのユニットから始めるか自分のレベルを確認しよう！(何度でも挑戦可)
+                  </CardTitle>
+                </CardBody>
+              </Card>
+            </Link>
+          </animated.div>
         </Col>
         <Col md="4" sm="6">
-          <Link
-            href={{
-              pathname: "vocabulary/quiz",
-              query: {
-                unitId: 1,
-                mode: Modes.MultipleAllUnit,
-                inOrder: true,
-              },
-            }}
-            passHref
-          >
-            <Card className={styles.card}>
-              <CardHeader>All Units</CardHeader>
-              <CardBody>
-                <CardTitle tag="p">
-                  全てのUnitの単語が混ざったクイズに挑戦
-                </CardTitle>
-              </CardBody>
-            </Card>
-          </Link>
+          <animated.div style={moveUp}>
+            <Link
+              href={{
+                pathname: "vocabulary/quiz",
+                query: {
+                  unitId: 1,
+                  mode: Modes.MultipleAllUnit,
+                  inOrder: true,
+                },
+              }}
+              passHref
+            >
+              <Card className={styles.card}>
+                <CardHeader>All Units</CardHeader>
+                <CardBody>
+                  <CardTitle tag="p">
+                    全てのUnitの単語が混ざったクイズに挑戦
+                  </CardTitle>
+                </CardBody>
+              </Card>
+            </Link>
+          </animated.div>
         </Col>
       </Row>
       <hr />
