@@ -82,8 +82,8 @@ const Home = () => {
   const dashBoard = (
     <Container>
       {user && <h1>Welcome back {user?.displayName}!</h1>}
-      <hr />
-      <h2>Go to...</h2>
+
+      <h2 className="mt-4">Go to...</h2>
       <Row>
         <Col sm="6" md="4" lg="3">
           <animated.div style={moveUp}>
@@ -131,7 +131,7 @@ const Home = () => {
           </animated.div>
         </Col>
       </Row>
-      <h2>Recent</h2>
+      <h2 className="mt-4">Recent</h2>
       <Row>
         {user ? (
           <RecentStudies user={user} />

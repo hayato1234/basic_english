@@ -20,6 +20,15 @@ import { Modes } from "../pages/vocabulary/quiz";
 import { useSpring, animated } from "react-spring";
 
 const styles = require("../styles/Vocab.module.css");
+const cardColors = [
+  "rgba(0,212,255,1)",
+  "rgba(28,165,222,1)",
+  "rgba(43,140,205,1)",
+  "rgba(76,84,166,1)",
+  "rgba(96,50,142,1)",
+  "rgba(121,9,113,1)",
+  "rgba(2,0,36,1)",
+];
 
 const UnitTiles = ({ unitData, unitId }) => {
   const vocabs: Vocab[] = unitData ? unitData.data().list : null;
@@ -38,7 +47,10 @@ const UnitTiles = ({ unitData, unitId }) => {
       {vocabs ? (
         <animated.div style={moveUpUnits}>
           <Link href="/vocabulary/[unit]" as={`/vocabulary/${unitId}`} passHref>
-            <Card className={styles.card}>
+            <Card
+              className={styles.card}
+              style={{ borderColor: cardColors[unitId], borderWidth: "2px" }}
+            >
               <CardHeader>{`Unit ${unitId}`}</CardHeader>
               <CardBody>
                 <CardTitle tag="p">Examples:</CardTitle>
