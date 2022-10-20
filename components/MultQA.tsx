@@ -31,7 +31,6 @@ const RenderQuiz = ({ originalVocabs }) => {
   const [currentVocab, setCurrentVocab] = useState(
     vocabs[currentUnit][currentId]
   );
-  // console.log(currentVocab);
   const [choices, setChoices] = useState(
     getChoices(currentVocab, vocabs[currentUnit], 5)
   );
@@ -40,9 +39,9 @@ const RenderQuiz = ({ originalVocabs }) => {
 
   const [showAnswer, setShowAnswer] = useState(false);
   const [showNext, setShowNext] = useState(false);
-  const [isModalOpen, setModalOpen] = useState(false);
+  const [isResultModalOpen, setResultModalOpen] = useState(false);
+  const [isWelcomeModalOpen, setWelcomeModalOpen] = useState(true);
 
-  console.log(currentId);
   useEffect(() => {
     setCurrentVocab(vocabs[currentUnit][currentId]);
     setChoices(getChoices(currentVocab, vocabs[currentUnit], 5));
@@ -78,7 +77,7 @@ const RenderQuiz = ({ originalVocabs }) => {
       if (c.gotCorrect) return a + 1;
       else return a;
     }, 0);
-    if (correctCount > 5 * currentUnit - 1) {
+    if (correctCount > (5 * currentUnit - 1) * (numOfQs / 25)) {
       // setCurrentId(currentId);
       // setChoices(getChoices(currentVocab, vocabs[currentUnit], 5));
       console.log("upping unit");
@@ -108,14 +107,18 @@ const RenderQuiz = ({ originalVocabs }) => {
     setShowAnswer(false);
     setShowNext(false);
     setUserChoices([]);
-    toggleModal();
+    toggleResultModal();
   };
   const finish = () => {
-    toggleModal();
+    toggleResultModal();
   };
 
-  const toggleModal = () => {
-    setModalOpen(!isModalOpen);
+  const toggleResultModal = () => {
+    setResultModalOpen(!isResultModalOpen);
+  };
+
+  const toggleWelcomeModal = () => {
+    setWelcomeModalOpen(!isWelcomeModalOpen);
   };
 
   return (
@@ -168,11 +171,12 @@ const RenderQuiz = ({ originalVocabs }) => {
         goNext={goNext}
         finish={finish}
         numOfQs={numOfQs}
+        showAnswer={showAnswer}
       />
 
       {/* ------------ result Modal ------------------- */}
-      <Modal isOpen={isModalOpen} toggle={toggleModal}>
-        <ModalHeader toggle={toggleModal}>Your result</ModalHeader>
+      <Modal isOpen={isResultModalOpen} toggle={toggleResultModal}>
+        <ModalHeader toggle={toggleResultModal}>Your result</ModalHeader>
         <ModalBody>
           <p>{`Score : ${userChoices.reduce((a, c) => {
             return c.gotCorrect ? a + 1 : a;
@@ -219,13 +223,42 @@ const RenderQuiz = ({ originalVocabs }) => {
             Try Again
           </Button>{" "}
           <Link href="/vocabulary" passHref>
-            <Button color="secondary" onClick={toggleModal}>
+            <Button color="secondary" onClick={toggleResultModal}>
               End
             </Button>
           </Link>
         </ModalFooter>
       </Modal>
       {/* ------------ result Modal ------------------- */}
+      {/* ------------ welcome Modal ------------------- */}
+      <Modal isOpen={isWelcomeModalOpen} toggle={toggleWelcomeModal}>
+        <ModalHeader toggle={toggleWelcomeModal}>実力チェック</ModalHeader>
+        <ModalBody>
+          <h5>Number of Questions</h5>
+          <p>
+            <i className="fa fa-cog" aria-hidden="true" />
+            設定ボタンから問題数を変えることができて、多いほど正確にレベルがチェックできます。
+          </p>
+          <h5>No time limit</h5>
+          <p>時間制限はありません。</p>
+          <h5>I don`t know</h5>
+          <p>
+            単語の意味が全くわからなければ、勘で正解するのを避けるために「わからない」を選びましょう。
+          </p>
+          <h5>Error!</h5>
+          <p>
+            問題や答えに問題があったら
+            <i className="fa fa-exclamation-circle" aria-hidden="true" />
+            ボタンを押して報告してね。
+          </p>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={toggleWelcomeModal}>
+            Start!
+          </Button>
+        </ModalFooter>
+      </Modal>
+      {/* ------------ welcome Modal ------------------- */}
     </>
   );
 };

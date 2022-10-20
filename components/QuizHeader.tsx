@@ -31,11 +31,11 @@ const QuizSettings = ({ isOpen, toggleModal, numOfQs, setNumOfQs }) => {
             <Dropdown isOpen={dropdownNumQ} toggle={toggleNumQ}>
               <DropdownToggle caret>{numOfQs}</DropdownToggle>
               <DropdownMenu>
-                <DropdownItem onClick={() => setNumOfQs(20)}>20</DropdownItem>
-                <DropdownItem onClick={() => setNumOfQs(40)}>40</DropdownItem>
-                <DropdownItem onClick={() => setNumOfQs(60)}>60</DropdownItem>
-                <DropdownItem onClick={() => setNumOfQs(80)}>80</DropdownItem>
+                <DropdownItem onClick={() => setNumOfQs(25)}>25</DropdownItem>
+                <DropdownItem onClick={() => setNumOfQs(50)}>50</DropdownItem>
+                <DropdownItem onClick={() => setNumOfQs(75)}>75</DropdownItem>
                 <DropdownItem onClick={() => setNumOfQs(100)}>100</DropdownItem>
+                <DropdownItem onClick={() => setNumOfQs(200)}>200</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </Col>
@@ -76,7 +76,7 @@ const QuizHeader = ({
       </h1>
       <hr />
       <Row>
-        <Col xs="3" className="me-auto">
+        <Col xs="4" className="me-auto">
           <p>{`Q : ${currentId + 1} / ${numOfQs}`}</p>
         </Col>
         <Col xs="4" className="d-flex justify-content-end">
