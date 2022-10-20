@@ -1,7 +1,7 @@
 import { getAuth, signOut } from "firebase/auth";
 import Link from "next/link";
 import React, { useState } from "react";
-import { useAuthState, useSignInWithGoogle } from "react-firebase-hooks/auth";
+import { useSignInWithGoogle } from "react-firebase-hooks/auth";
 
 import {
   Navbar,
@@ -23,9 +23,14 @@ const styles = require("../styles/Header.module.css");
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [signInWithGoogle] = useSignInWithGoogle(getAuth());
-  const [user] = useAuthState(getAuth());
+  // const [user, userLoading, userError] = useAuthState(getAuth());
+  const user = getAuth().currentUser;
+
+  // userError && console.log(userError);
+  console.log(user?.photoURL);
 
   const closeNav = () => {
+    //when nav item clicked, the nav doesn't close without this.
     setMenuOpen(false);
   };
 
@@ -55,7 +60,7 @@ const Header = () => {
         </Nav>
         {user && user.photoURL && (
           <NavbarText>
-            <a id="userPhoto" role="button" href="#/">
+            <a id="userPhoto" role="button" href="javascript:void(0)">
               <img
                 src={user.photoURL}
                 className={styles.user_icon}
@@ -70,12 +75,12 @@ const Header = () => {
             >
               <PopoverBody>
                 <Link passHref href="/user">
-                  <NavLink>
+                  <NavLink onClick={closeNav}>
                     <i className="fa fa-user" aria-hidden="true" /> Profile
                   </NavLink>
                 </Link>
                 <Link passHref href="/settings">
-                  <NavLink>
+                  <NavLink onClick={closeNav}>
                     <i className="fa fa-cog" aria-hidden="true" /> Settings
                   </NavLink>
                 </Link>
@@ -88,7 +93,7 @@ const Header = () => {
           </NavbarText>
         )}
         {!user && (
-          <NavbarText>
+          <NavbarText onClick={closeNav}>
             <Button
               outline
               color="secondary"
