@@ -18,6 +18,7 @@ import Link from "next/link";
 import { UNITS, DB_UNITS } from "../utils/staticValues";
 import { Modes } from "../pages/vocabulary/quiz";
 import { useSpring, animated } from "react-spring";
+import { getAuth } from "firebase/auth";
 
 const styles = require("../styles/Vocab.module.css");
 const cardColors = [
@@ -64,15 +65,22 @@ const UnitTiles = ({ unitData, unitId }) => {
             </Card>
           </Link>
         </animated.div>
+      ) : getAuth().currentUser ? (
+        <Card className={styles.card}>
+          <CardHeader>{`${unitId}`}</CardHeader>
+          <CardBody>
+            <CardTitle tag="h6">準備中</CardTitle>
+            <CardText>"準備中"</CardText>
+          </CardBody>
+        </Card>
       ) : (
-        <>
-          <Card className={styles.card}>
-            <CardHeader>{`${unitId}`}</CardHeader>
-            <CardBody>
-              <CardTitle tag="p">機能準備中</CardTitle>
-            </CardBody>
-          </Card>
-        </>
+        <Card>
+          <CardHeader>{`${unitId}`}</CardHeader>
+          <CardBody>
+            <CardTitle tag="h6">Login in to add vocabulary</CardTitle>
+            <CardText>"新しい単語を足すためにはログインしてください"</CardText>
+          </CardBody>
+        </Card>
       )}
     </>
   );
@@ -198,9 +206,9 @@ const UnitList = () => {
             </Col>
           </Row>
           <hr />
-          <Row>
+          <Row className="mb-5">
             <Col sm="6" md="4" lg="3">
-              <UnitTiles unitData={null} unitId={"単語を追加"} />
+              <UnitTiles unitData={null} unitId={"Add vocabulary"} />
             </Col>
           </Row>
         </>
