@@ -1,6 +1,15 @@
+export interface CustomUnit {
+  id: number;
+  title: string;
+  vocabs: Vocab[];
+}
+export interface CustomUnitList {
+  list: CustomUnit[];
+}
+
 export interface Vocab {
   id: number;
-  unit: number;
+  unit: number | string;
   num: number;
   parts: string;
   en: string;

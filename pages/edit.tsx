@@ -2,10 +2,12 @@ import React from "react";
 import { getAuth } from "firebase/auth";
 import { useRouter } from "next/router";
 import ErrorMessage from "../components/ErrorMessage";
+import EditVocab from "../components/customVocab/EditVocab";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 const edit = (): JSX.Element => {
-  const user = getAuth().currentUser;
-
+  // const user = getAuth().currentUser;
+  const [user, loading, error] = useAuthState(getAuth());
   if (!user)
     return (
       <ErrorMessage
@@ -15,8 +17,10 @@ const edit = (): JSX.Element => {
     );
 
   const { title: unitTitle } = useRouter().query;
-  if (!unitTitle)
-    return <ErrorMessage message={`${unitTitle} not found`} backURL="/" />;
+  if (unitTitle === undefined) {
+    //i- means adding a new unit
+    return <EditVocab unitData={undefined} currUser={user} />;
+  }
 
   return (
     <div>

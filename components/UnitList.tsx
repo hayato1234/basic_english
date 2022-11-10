@@ -66,13 +66,15 @@ const UnitTiles = ({ unitData, unitId }) => {
           </Link>
         </animated.div>
       ) : getAuth().currentUser ? (
-        <Card className={styles.card}>
-          <CardHeader>{`${unitId}`}</CardHeader>
-          <CardBody>
-            <CardTitle tag="h6">準備中</CardTitle>
-            <CardText>"準備中"</CardText>
-          </CardBody>
-        </Card>
+        <Link href="/edit">
+          <Card className={styles.card}>
+            <CardHeader>{`${unitId}`}</CardHeader>
+            <CardBody>
+              <CardTitle tag="h6">準備中</CardTitle>
+              <CardText>"準備中"</CardText>
+            </CardBody>
+          </Card>
+        </Link>
       ) : (
         <Card>
           <CardHeader>{`${unitId}`}</CardHeader>

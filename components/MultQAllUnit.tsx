@@ -137,6 +137,7 @@ const RenderQuiz = ({ originalVocabs }) => {
         goNext={goNext}
         finish={finish}
         numOfQs={numOfQs}
+        showAnswer={showAnswer}
       />
       {/* ------------ result Modal ------------------- */}
       <Modal isOpen={isModalOpen} toggle={toggleModal}>

@@ -496,6 +496,7 @@ const RenderQuizWithoutUser = ({ vocabsData, inOrder, unitId }) => {
         goNext={goNext}
         finish={finish}
         numOfQs={numOfQs}
+        showAnswer={showAnswer}
       />
 
       {/* ------------ result Modal ------------------- */}

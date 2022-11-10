@@ -27,7 +27,7 @@ const Header = () => {
   const user = getAuth().currentUser;
 
   // userError && console.log(userError);
-  console.log(user?.photoURL);
+  // console.log(user?.photoURL);
 
   const closeNav = () => {
     //when nav item clicked, the nav doesn't close without this.
@@ -60,7 +60,7 @@ const Header = () => {
         </Nav>
         {user && user.photoURL && (
           <NavbarText>
-            <a id="userPhoto" role="button" href="javascript:void(0)">
+            <a id="userPhoto" role="button">
               <img
                 src={user.photoURL}
                 className={styles.user_icon}

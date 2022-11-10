@@ -1,5 +1,6 @@
 export const DB_UNITS = "unit_data";
 export const DB_USER_DATA = "user_data";
+export const DB_USER_VOCAB = "user_vocab";
 export const UNITS = [0, 1, 2, 3, 4, 5];
 
 export const PARTS_TO_JPN = {

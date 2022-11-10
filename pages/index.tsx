@@ -1,5 +1,14 @@
 import React, { ReactNode } from "react";
-import { Card, CardBody, CardHeader, Col, Container, Row } from "reactstrap";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  CardText,
+  CardTitle,
+  Col,
+  Container,
+  Row,
+} from "reactstrap";
 import { useSpring, animated } from "react-spring";
 
 import { getAuth, User } from "firebase/auth";
@@ -21,6 +30,7 @@ const RecentStudies = ({ user }) => {
     doc(db, DB_USER_DATA, user.uid),
     {}
   );
+
   const recentCards: ReactNode[] = [];
   const moveUpRecent = useSpring({
     to: { opacity: 1, transform: "translateY(0px)" },
@@ -116,6 +126,31 @@ const Home = () => {
                 </CardBody>
               </Card>
             </Link>
+          </animated.div>
+        </Col>
+        <Col>
+          <animated.div style={moveUp}>
+            {user ? (
+              <Link href="/edit">
+                <Card className={styles.card}>
+                  <CardHeader>{`Add vocabulary`}</CardHeader>
+                  <CardBody>
+                    <CardTitle tag="h6">準備中</CardTitle>
+                    <CardText>"準備中"</CardText>
+                  </CardBody>
+                </Card>
+              </Link>
+            ) : (
+              <Card>
+                <CardHeader>{`Add vocabulary`}</CardHeader>
+                <CardBody>
+                  <CardTitle tag="h6">Login in to add vocabulary</CardTitle>
+                  <CardText>
+                    "新しい単語を足すためにはログインしてください"
+                  </CardText>
+                </CardBody>
+              </Card>
+            )}
           </animated.div>
         </Col>
         <Col sm="6" md="4" lg="3">
