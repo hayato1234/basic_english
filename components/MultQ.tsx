@@ -161,7 +161,7 @@ const RenderQuizWithUser = ({ vocabsData, inOrder, unitId, currUser }) => {
   if (unitId.includes("user")) {
     const units: CustomUnit[] = Object.values(vocabsData.data());
     const unit = units.filter(
-      (unit: CustomUnit) => unit.id === +unitId.slice(4)
+      (unit: CustomUnit) => +unit.id === +unitId.slice(4)
     );
     if (unit) {
       vocabs = unit[0].vocabs;

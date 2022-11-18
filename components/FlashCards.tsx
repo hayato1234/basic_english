@@ -96,7 +96,7 @@ const FlashCards = ({ vocab }) => {
         )}
         {leftIndex > lastIndex ? (
           <Col xs="5" className={styles.flashcard}>
-            <p>終わり</p>
+            <p>End</p>
           </Col>
         ) : (
           <Col xs="5" className={styles.flashcard}>

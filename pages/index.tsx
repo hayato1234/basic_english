@@ -131,7 +131,7 @@ const Home = () => {
             </Link>
           </animated.div>
         </Col>
-        <Col>
+        <Col sm="6" md="4" lg="3">
           <animated.div style={moveUp}>
             {user ? (
               <Link href="/edit">
