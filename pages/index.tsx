@@ -11,7 +11,7 @@ import {
 } from "reactstrap";
 import { useSpring, animated } from "react-spring";
 
-import { getAuth, User } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import { doc } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useDocument } from "react-firebase-hooks/firestore";
@@ -47,14 +47,17 @@ const RecentStudies = ({ user }) => {
     const maxLength: number = history.length < 4 ? history.length : 4;
     for (let i = 0; i < maxLength; i++) {
       const historyType = history[i].type;
-      const historyUnit = history[i].unitData[0];
+      const historyUnit = history[i].unitData;
+      const historyUnitId = `${historyType}/${historyUnit.id
+        .toString()
+        .replace("unit", "")}`;
       recentCards.push(
-        <Col key={historyType + historyUnit} sm="6" md="4" lg="3">
+        <Col key={historyType + historyUnit.id} sm="6" md="4" lg="3">
           <animated.div style={moveUpRecent}>
             <Link
               role="button"
               href="/[type]/[unit]"
-              as={`${historyType}/${historyUnit.replace("unit", "")}`}
+              as={historyUnitId}
               passHref
             >
               <Card className={styles.card}>
@@ -63,7 +66,7 @@ const RecentStudies = ({ user }) => {
                     ? STUDY_TITLES.vocabulary
                     : STUDY_TITLES.grammar}
                 </CardHeader>
-                <CardBody>{historyUnit}</CardBody>
+                <CardBody>{historyUnit.title}</CardBody>
               </Card>
             </Link>
           </animated.div>
@@ -168,7 +171,7 @@ const Home = () => {
       </Row>
       <h2 className="mt-4">Recent</h2>
       <Row>
-        {user ? (
+        {loading ? null : user ? (
           <RecentStudies user={user} />
         ) : (
           <p>Login to see recent items</p>

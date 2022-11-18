@@ -6,6 +6,9 @@ import MultQ from "../../../components/MultQ";
 import { UNITS } from "../../../utils/staticValues";
 import MultQA from "../../../components/MultQA";
 import MultQAllUnit from "../../../components/MultQAllUnit";
+import ErrorMessage from "../../../components/ErrorMessage";
+import { getAuth } from "firebase/auth";
+import MultQ2 from "../../../components/MultQ2";
 
 export enum Modes {
   Multiple,
@@ -13,10 +16,10 @@ export enum Modes {
   MultipleAllUnit,
 }
 
-const ReturnMode = ({ mode, unitId, inOrder }) => {
+const ReturnMode = ({ mode, unitId, inOrder, user }) => {
   switch (+mode) {
     case Modes.Multiple:
-      return <MultQ unitId={unitId} inOrder={inOrder} />;
+      return <MultQ2 unitId={unitId} inOrder={inOrder} user={user} />;
     case Modes.MultipleAssess:
       return <MultQA />;
     case Modes.MultipleAllUnit:
@@ -29,10 +32,17 @@ const ReturnMode = ({ mode, unitId, inOrder }) => {
 const Quiz = () => {
   const router = useRouter();
   const { unitId, mode, inOrder } = router.query;
+  const user = getAuth().currentUser;
 
   //i- return error if unitId is not 0~5
-  if (unitId === undefined || +unitId < 0 || +unitId > UNITS.length - 1) {
-    return <p>{unitId} doesn't exist</p>;
+  // || +unitId < 0 || +unitId > UNITS.length - 1
+  if (unitId === undefined) {
+    return (
+      <ErrorMessage
+        message={`${unitId} doesn't exist`}
+        backURL={"/vocabulary"}
+      />
+    );
   }
 
   if (mode === undefined || Modes[+mode] === undefined) {
@@ -41,7 +51,12 @@ const Quiz = () => {
 
   return (
     <Container>
-      <ReturnMode mode={mode} unitId={unitId} inOrder={inOrder === "true"} />
+      <ReturnMode
+        mode={mode}
+        unitId={unitId}
+        inOrder={inOrder === "true"}
+        user={user}
+      />
     </Container>
   );
 };

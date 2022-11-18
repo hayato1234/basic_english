@@ -10,13 +10,12 @@ import { PARTS_LIST, PARTS_TO_JPN } from "../utils/staticValues";
 
 const styles = require("../styles/Vocab.module.css");
 
-const FlashCards = ({ unitData }) => {
-  const [vocabs, setVocabs] = useState(
-    unitData.data() ? unitData.data().list : null
-  );
+const FlashCards = ({ vocab }) => {
+  const [vocabs, setVocabs] = useState(vocab);
 
   const [leftIndex, setLeftIndex] = useState(0);
   const [randomize, setRandomize] = useState(false);
+
   if (!vocabs) {
     return (
       <>
@@ -77,7 +76,7 @@ const FlashCards = ({ unitData }) => {
       <Row className="justify-content-center">
         {leftIndex === 0 ? (
           <Col xs="5" className={styles.flashcard}>
-            <h1>{`Unit ${vocabs[0].unit}`}</h1>
+            <h1>{`Unit: ${vocabs[0].unit}`}</h1>
           </Col>
         ) : (
           <Col xs="5" className={styles.flashcard}>
@@ -95,7 +94,7 @@ const FlashCards = ({ unitData }) => {
             <Button onClick={() => setLeftIndex(leftIndex - 1)}>&lt;</Button>
           </Col>
         )}
-        {leftIndex + 1 >= lastIndex ? (
+        {leftIndex > lastIndex ? (
           <Col xs="5" className={styles.flashcard}>
             <p>終わり</p>
           </Col>
@@ -104,7 +103,7 @@ const FlashCards = ({ unitData }) => {
             <p style={{ textAlign: "center" }}>{`${leftIndex + 1} / ${
               vocabs.length
             }`}</p>
-            <h1>{vocabs[leftIndex].en}</h1>
+            <h2>{vocabs[leftIndex].en}</h2>
             <Button onClick={() => setLeftIndex(leftIndex + 1)}>&gt;</Button>
           </Col>
         )}

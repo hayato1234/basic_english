@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useDocument } from "react-firebase-hooks/firestore";
@@ -10,82 +10,110 @@ import FlashCards from "../../../components/FlashCards";
 
 import { Modes } from "../quiz";
 import { db } from "../../../utils/initAuth";
-import { UNITS, DB_UNITS, DB_USER_DATA } from "../../../utils/staticValues";
+import {
+  UNITS,
+  DB_UNITS,
+  DB_USER_DATA,
+  DB_USER_VOCAB,
+} from "../../../utils/staticValues";
 import { getAuth } from "firebase/auth";
 import { history } from "../../../types/userType";
+import { CustomUnit } from "../../../types/vocabType";
+import { useAuthState } from "react-firebase-hooks/auth";
 
-const SendHistory = (user: { uid: string }, unitId: number) => {
-  const [userData, userDataLoading, userDataError] = useDocument(
-    doc(db, DB_USER_DATA, user.uid),
-    {}
-  );
-  if (userDataError) console.log(userDataError.message);
-  const typeVocab = "vocabulary";
-  const updateHistory = async () => {
-    if (!userDataLoading && user)
-      if (userData && userData.data()) {
-        const allUserData = userData.data();
-        if (allUserData?.history) {
-          //i- get here if history exists
-          if (
-            allUserData?.history.find(
-              (h: history) =>
-                h.type === typeVocab && h.unitData[0] === `unit${unitId}`
-            )
-          ) {
-            //i- get here if the unit already exist in history, so delete and bring it to the last
-            const newList = allUserData?.history.filter(
-              (h: history) =>
-                h.type === typeVocab && h.unitData[0] !== `unit${unitId}`
-            );
-
-            await updateDoc(doc(db, DB_USER_DATA, user.uid), {
-              history: [
-                ...newList,
-                { type: typeVocab, unitData: [`unit${unitId}`] },
-              ],
-            });
-          } else {
-            await updateDoc(doc(db, DB_USER_DATA, user.uid), {
-              history: [
-                ...allUserData?.history,
-                { type: typeVocab, unitData: [`unit${unitId}`] },
-              ],
-            });
-          }
-        } else {
-          //i- get here if no history
-          await updateDoc(doc(db, DB_USER_DATA, user.uid), {
-            history: [{ type: typeVocab, unitData: [`unit${unitId}`] }],
-          });
-        }
-      }
-  };
-  updateHistory().catch(console.error);
+type historyProps = {
+  userUid: string;
+  unitId: string;
+  unitTitle: string;
 };
 
-const RenderDetail = ({ unitId }) => {
-  const [vocab, vocabLoading, vocabError] = useDocument(
-    doc(db, DB_UNITS, `unit${unitId}`),
+const SendHistory = ({ userUid, unitId, unitTitle }: historyProps) => {
+  const [userData, userDataLoading, userDataError] = useDocument(
+    doc(db, DB_USER_DATA, userUid),
     {}
   );
+  const [historySent, setSent] = useState(false);
+  if (userDataError) console.log(userDataError.message);
 
-  const match = useRouter().pathname;
+  if (!historySent) {
+    if (userData) {
+      const typeVocab = "vocabulary";
+      // const unitTitle = isNaN(+unitId) ? `unit${unitId}` : unitId;
+      const updateHistory = async () => {
+        if (!userDataLoading && userUid)
+          if (userData && userData.data()) {
+            const allUserData = userData.data();
+            if (allUserData?.history) {
+              //i- get here if history exists
+              if (
+                allUserData?.history.find(
+                  (h: history) =>
+                    h.type === typeVocab && h.unitData.id === unitId
+                )
+              ) {
+                //i- get here if the unit already exist in history, so delete and bring it to the last
+                const newList = allUserData?.history.filter(
+                  (h: history) =>
+                    h.type === typeVocab && h.unitData.id !== unitId
+                );
+
+                await updateDoc(doc(db, DB_USER_DATA, userUid), {
+                  history: [
+                    ...newList,
+                    {
+                      type: typeVocab,
+                      unitData: { id: unitId, title: unitTitle },
+                    },
+                  ],
+                });
+              } else {
+                //i- get here if the unit doesn't exist in history yet, so make one and add
+                await updateDoc(doc(db, DB_USER_DATA, userUid), {
+                  history: [
+                    ...allUserData?.history,
+                    {
+                      type: typeVocab,
+                      unitData: { id: unitId, title: unitTitle },
+                    },
+                  ],
+                });
+              }
+            } else {
+              //i- get here if no history
+              await updateDoc(doc(db, DB_USER_DATA, userUid), {
+                history: [
+                  {
+                    type: typeVocab,
+                    unitData: { id: unitId, title: unitTitle },
+                  },
+                ],
+              });
+            }
+          }
+      };
+      updateHistory().catch(console.error);
+      setSent(true);
+    }
+  }
+
+  return <></>;
+};
+
+const RenderDetail = ({ unitId, unitData, userUid }) => {
+  const vocab = unitData.data().list;
 
   return (
     <Container className="pt-4">
       <Link href="/vocabulary">
         <i className="fa fa-arrow-left" aria-hidden="true" />
       </Link>
-      {vocabLoading ? (
-        <h1>Loading...</h1>
-      ) : vocab ? (
+      {vocab ? (
         <>
           <h1>{`Unit ${unitId}`}</h1>
           <hr />
           <h2>単語帳</h2>
 
-          <FlashCards unitData={vocab} />
+          <FlashCards vocab={vocab} />
 
           <hr />
           <Row>
@@ -133,26 +161,164 @@ const RenderDetail = ({ unitId }) => {
             </Col>
           </Row>
 
-          <VocabList unitData={vocab} unitId={unitId} />
+          <VocabList vocabs={vocab} unitId={unitId} />
+          {userUid && (
+            <SendHistory
+              userUid={userUid}
+              unitTitle={`unit${unitId}`}
+              unitId={unitId}
+            />
+          )}
         </>
       ) : (
-        <h1>{vocabError?.message}</h1>
+        <h1>Error Loading</h1>
       )}
     </Container>
   );
 };
 
-const UnitDetail = () => {
-  const router = useRouter();
-  const { unit } = router.query;
-  const unitId = unit ? +unit : 0;
+const PresetUnitDetail = ({ unitId, userUid }) => {
+  const [vocab, vocabLoading, vocabError] = useDocument(
+    doc(db, DB_UNITS, `unit${unitId}`),
+    {}
+  );
+  return (
+    <>
+      {vocabLoading ? null : vocab ? (
+        <RenderDetail unitId={unitId} unitData={vocab} userUid={userUid} />
+      ) : null}
+    </>
+  );
+};
 
-  const user = getAuth().currentUser;
-  if (user) SendHistory(user, unitId);
+const RenderCustomDetail = ({ unitId, unitData, userUid }) => {
+  const userUnits: CustomUnit[] = Object.values(unitData.data());
+  const userUnit = userUnits.find((unit) => +unit.id === +unitId);
+
+  return (
+    <Container className="pt-4">
+      {userUnit ? (
+        <>
+          <Row className="justify-content-between">
+            <Col xs="1">
+              <Link href="/vocabulary">
+                <i className="fa fa-arrow-left" aria-hidden="true" />
+              </Link>
+            </Col>
+            <Col xs="1">
+              <Link href="/edit/[id]" as={`/edit/${userUnit.id}`} role="button">
+                <i className="fa fa-pencil" aria-hidden="true" />
+              </Link>
+            </Col>
+          </Row>
+          <h1>{userUnit.title}</h1>
+          <hr />
+          <h2>単語帳</h2>
+
+          <FlashCards vocab={userUnit.vocabs} />
+
+          <hr />
+          <Row>
+            <h2>Study Modes</h2>
+          </Row>
+          <Row>
+            <Col className="m-1">
+              <Link
+                href={{
+                  pathname: "/vocabulary/quiz",
+                  query: {
+                    unitId: "user" + unitId,
+                    mode: Modes.Multiple,
+                    inOrder: false,
+                  },
+                }}
+                passHref
+              >
+                <Button>4択クイズ(ランダム順番)</Button>
+              </Link>
+            </Col>
+          </Row>
+          <Row>
+            <Col className="m-1">
+              <Link
+                href={{
+                  pathname: "/vocabulary/quiz",
+                  query: {
+                    unitId: "user" + unitId,
+                    mode: Modes.Multiple,
+                    inOrder: true,
+                  },
+                }}
+                passHref
+              >
+                <Button>4択クイズ(単語番号順)</Button>
+              </Link>
+            </Col>
+          </Row>
+
+          <hr />
+          <Row className="mb-2">
+            <Col>
+              <h2>単語リスト</h2>
+            </Col>
+          </Row>
+
+          <VocabList unitId={unitId} vocabs={userUnit.vocabs} />
+
+          {userUid && (
+            <SendHistory
+              userUid={userUid}
+              unitTitle={userUnit.title}
+              unitId={`user${userUnit.id}`}
+            />
+          )}
+        </>
+      ) : (
+        <h1>error loading your unit</h1>
+      )}
+    </Container>
+  );
+};
+
+const CustomUnitDetail = ({ unitId, user }) => {
+  const [userUnitsData, userUnitsDataLoading, userUnitsDataError] = useDocument(
+    doc(db, DB_USER_VOCAB, user.uid),
+    {}
+  );
 
   return (
     <>
-      {unitId < 0 || unitId > UNITS.length - 1 ? (
+      {userUnitsDataLoading ? (
+        <p>Loading...</p>
+      ) : userUnitsData ? (
+        <RenderCustomDetail
+          unitId={unitId.slice(4)}
+          unitData={userUnitsData}
+          userUid={user.uid}
+        />
+      ) : (
+        <p>Error {userUnitsDataError?.message}</p>
+      )}
+    </>
+  );
+};
+
+const UnitDetail = () => {
+  const [user, userLoading] = useAuthState(getAuth());
+  const router = useRouter();
+  const { unit } = router.query;
+  const unitId = unit ? (Number.isInteger(+unit) ? +unit : unit.toString()) : 0;
+
+  return (
+    <>
+      {/* if userXXX then user custom unit, otherwise preset units */}
+      {unitId.toString().includes("user") ? (
+        userLoading ? (
+          <p>Loading</p>
+        ) : (
+          user && <CustomUnitDetail unitId={unitId} user={user} />
+        )
+      ) : unitId < 0 || unitId > UNITS.length - 1 ? (
         <>
           <Link href="/vocabulary">
             <i className="fa fa-arrow-left" aria-hidden="true" />
@@ -160,7 +326,7 @@ const UnitDetail = () => {
           <p>{`Error: Unit ${unitId} doesn't exist`}</p>
         </>
       ) : (
-        <RenderDetail unitId={unitId} />
+        <PresetUnitDetail unitId={unitId} userUid={user?.uid} />
       )}
     </>
   );

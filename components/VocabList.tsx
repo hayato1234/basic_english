@@ -7,9 +7,9 @@ import { validateSearchForm } from "../utils/validation";
 
 const styles = require("../styles/Vocab.module.css");
 
-const VocabList = ({ unitData, unitId }) => {
+const VocabList = ({ vocabs, unitId }) => {
   const [searchErrMsg, setSearchErrMsg] = useState("");
-  if (!unitData.data()) {
+  if (!vocabs) {
     return (
       <>
         <h1>Error</h1>
@@ -19,7 +19,7 @@ const VocabList = ({ unitData, unitId }) => {
       </>
     );
   }
-  const vocabs: Vocab[] = unitData.data().list;
+  // const vocabs: Vocab[] = unitData.data().list;
   const initialValues = { key: "" };
   interface valuesType {
     key: string;

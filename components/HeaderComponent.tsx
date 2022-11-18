@@ -1,7 +1,7 @@
 import { getAuth, signOut } from "firebase/auth";
 import Link from "next/link";
 import React, { useState } from "react";
-import { useSignInWithGoogle } from "react-firebase-hooks/auth";
+import { useAuthState, useSignInWithGoogle } from "react-firebase-hooks/auth";
 
 import {
   Navbar,
@@ -23,8 +23,8 @@ const styles = require("../styles/Header.module.css");
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [signInWithGoogle] = useSignInWithGoogle(getAuth());
-  // const [user, userLoading, userError] = useAuthState(getAuth());
-  const user = getAuth().currentUser;
+  const [user] = useAuthState(getAuth());
+  // const user = getAuth().currentUser;
 
   // userError && console.log(userError);
   // console.log(user?.photoURL);
@@ -60,18 +60,22 @@ const Header = () => {
         </Nav>
         {user && user.photoURL && (
           <NavbarText>
-            <a id="userPhoto" role="button">
+            <Button
+              id="userPhoto"
+              role="button"
+              style={{ backgroundColor: "transparent", border: 0 }}
+            >
               <img
                 src={user.photoURL}
                 className={styles.user_icon}
                 alt="icon"
               />
-            </a>
+            </Button>
 
             <UncontrolledPopover
               target="userPhoto"
               placement="bottom"
-              trigger="focus"
+              trigger="legacy"
             >
               <PopoverBody>
                 <Link passHref href="/user">

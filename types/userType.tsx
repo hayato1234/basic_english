@@ -5,7 +5,10 @@ export interface userData {
 
 export interface history {
   type: string;
-  unitData: string[];
+  unitData: {
+    id: string;
+    title: string;
+  };
 }
 
 export interface vocabData {

@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -7,18 +8,27 @@ import {
   CardTitle,
   Col,
   Container,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   Row,
 } from "reactstrap";
-import { useCollection } from "react-firebase-hooks/firestore";
-import { collection } from "firebase/firestore";
+import { useCollection, useDocument } from "react-firebase-hooks/firestore";
+import { collection, deleteField, doc, updateDoc } from "firebase/firestore";
 
 import { db } from "../utils/initAuth";
-import { Vocab } from "../types/vocabType";
+import { CustomUnit, Vocab } from "../types/vocabType";
 import Link from "next/link";
-import { UNITS, DB_UNITS } from "../utils/staticValues";
+import {
+  UNITS,
+  DB_UNITS,
+  DB_USER_DATA,
+  DB_USER_VOCAB,
+} from "../utils/staticValues";
 import { Modes } from "../pages/vocabulary/quiz";
 import { useSpring, animated } from "react-spring";
-import { getAuth } from "firebase/auth";
+import { getAuth, User } from "firebase/auth";
 
 const styles = require("../styles/Vocab.module.css");
 const cardColors = [
@@ -66,33 +76,186 @@ const UnitTiles = ({ unitData, unitId }) => {
           </Link>
         </animated.div>
       ) : getAuth().currentUser ? (
-        <Link href="/edit">
-          <Card className={styles.card}>
+        <animated.div style={moveUpUnits}>
+          <Link href="/edit">
+            <Card className={styles.card}>
+              <CardHeader>{`${unitId}`}</CardHeader>
+              <CardBody>
+                <CardTitle tag="h6">準備中</CardTitle>
+                <CardText>"準備中"</CardText>
+              </CardBody>
+            </Card>
+          </Link>
+        </animated.div>
+      ) : (
+        <animated.div style={moveUpUnits}>
+          <Card>
             <CardHeader>{`${unitId}`}</CardHeader>
             <CardBody>
-              <CardTitle tag="h6">準備中</CardTitle>
-              <CardText>"準備中"</CardText>
+              <CardTitle tag="h6">Login in to add vocabulary</CardTitle>
+              <CardText>
+                "新しい単語を足すためにはログインしてください"
+              </CardText>
             </CardBody>
           </Card>
-        </Link>
-      ) : (
-        <Card>
-          <CardHeader>{`${unitId}`}</CardHeader>
-          <CardBody>
-            <CardTitle tag="h6">Login in to add vocabulary</CardTitle>
-            <CardText>"新しい単語を足すためにはログインしてください"</CardText>
-          </CardBody>
-        </Card>
+        </animated.div>
       )}
     </>
   );
 };
 
-const UnitList = () => {
+const RenderCustomUnit = ({ unitData, userId }) => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedUnit, setSelectedUnit] = useState<CustomUnit>();
+  const userUnits: CustomUnit[] = Object.values(unitData);
+  const toggleDeleteModal = () => setModalOpen(!modalOpen);
+
+  const handleDeletePrompt = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    userUnit: CustomUnit
+  ) => {
+    //i- when user click trash icon
+    event.stopPropagation();
+    setSelectedUnit(userUnit);
+    toggleDeleteModal();
+  };
+  const handleDelete = async () => {
+    //i- when user click delete button in modal
+    if (selectedUnit) {
+      console.log("deleting", selectedUnit.id);
+      try {
+        await updateDoc(doc(db, DB_USER_VOCAB, userId), {
+          [selectedUnit.id]: deleteField(),
+        });
+      } catch {
+        console.log("failed to delete");
+      } finally {
+        toggleDeleteModal();
+      }
+    }
+  };
+  return (
+    <>
+      {userUnits &&
+        userUnits.map((userUnit) => {
+          return (
+            <>
+              <Col sm="6" md="4" lg="3">
+                <Link
+                  href="/vocabulary/[unit]"
+                  as={`/vocabulary/user${userUnit.id}`}
+                  passHref
+                >
+                  <Card
+                    className={styles.card}
+                    style={{
+                      borderColor: cardColors[0],
+                      borderWidth: "2px",
+                    }}
+                  >
+                    <CardHeader>
+                      <Row>
+                        <Col xs="10" className="me-auto">
+                          {userUnit.title}
+                        </Col>
+                        <Col
+                          xs="1"
+                          className="d-flex align-items-center justify-content-end"
+                        >
+                          <Button
+                            onClick={(e) => handleDeletePrompt(e, userUnit)}
+                          >
+                            <i className="fa fa-trash-o" aria-hidden="true" />
+                          </Button>
+                        </Col>
+                      </Row>
+                    </CardHeader>
+
+                    <CardBody>
+                      <CardTitle tag="p">Examples:</CardTitle>
+                      {userUnit.vocabs && (
+                        <CardText className="ms-2">
+                          {userUnit.vocabs[0].en}
+                        </CardText>
+                      )}
+                    </CardBody>
+                  </Card>
+                </Link>
+              </Col>
+            </>
+          );
+        })}
+      <Modal isOpen={modalOpen} toggle={toggleDeleteModal}>
+        <ModalHeader toggle={toggleDeleteModal}>Delete this unit?</ModalHeader>
+        <ModalBody>
+          {selectedUnit && selectedUnit.title}
+          を削除しますか？（元には戻せません）
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={toggleDeleteModal}>
+            Cancel
+          </Button>
+          <Button color="primary" onClick={() => handleDelete()}>
+            Delete
+          </Button>
+        </ModalFooter>
+      </Modal>
+    </>
+  );
+};
+
+const CustomUnitTiles = ({ user }: { user: User }) => {
+  const [userUnitsData, userUnitsDataLoading, userUnitsDataError] = useDocument(
+    doc(db, DB_USER_VOCAB, user.uid),
+    {}
+  );
+  const moveUpUnits = useSpring({
+    to: { opacity: 1, transform: "translateY(0px)" },
+    from: {
+      opacity: 0,
+      transform: "translateY(150px)",
+    },
+    delay: 200,
+    config: { friction: 40 },
+  });
+
+  return (
+    <>
+      <animated.div style={moveUpUnits}>
+        <Row className="mb-5">
+          <Col sm="6" md="4" lg="3">
+            <Link href="/edit">
+              <Card className={styles.card}>
+                <CardHeader>Add vocabulary</CardHeader>
+                <CardBody>
+                  <CardTitle tag="h6">準備中</CardTitle>
+                  <CardText>"準備中"</CardText>
+                </CardBody>
+              </Card>
+            </Link>
+          </Col>
+          {userUnitsDataLoading ? (
+            <p>Loading</p>
+          ) : userUnitsData ? (
+            <RenderCustomUnit
+              unitData={userUnitsData.data()}
+              userId={user.uid}
+            />
+          ) : (
+            <p>{userUnitsDataError?.message}</p>
+          )}
+        </Row>
+      </animated.div>
+    </>
+  );
+};
+
+const UnitList = ({ user }: { user: User | null }) => {
   const [unitsData, unitsDataLoading, unitsDataError] = useCollection(
     collection(db, DB_UNITS),
     {}
   );
+
   const moveUp = useSpring({
     to: { opacity: 1, transform: "translateY(0px)" },
     from: {
@@ -208,11 +371,22 @@ const UnitList = () => {
             </Col>
           </Row>
           <hr />
-          <Row className="mb-5">
+
+          {user ? (
+            <CustomUnitTiles user={user} />
+          ) : (
             <Col sm="6" md="4" lg="3">
-              <UnitTiles unitData={null} unitId={"Add vocabulary"} />
+              <Card>
+                <CardHeader>Add your vocabulary</CardHeader>
+                <CardBody>
+                  <CardTitle tag="h6">Login to add vocabulary</CardTitle>
+                  <CardText>
+                    "新しい単語を足すためにはログインしてください"
+                  </CardText>
+                </CardBody>
+              </Card>
             </Col>
-          </Row>
+          )}
         </>
       ) : (
         <h5>{`Error loading: ${unitsDataError}`}</h5>

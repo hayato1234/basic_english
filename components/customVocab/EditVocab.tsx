@@ -3,7 +3,6 @@ import { doc, updateDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useDocument } from "react-firebase-hooks/firestore";
 import {
-  Alert,
   Button,
   Col,
   Container,
@@ -21,20 +20,30 @@ import { db } from "../../utils/initAuth";
 import { DB_USER_VOCAB } from "../../utils/staticValues";
 import VocabRow from "./VocabRow";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
-const EditVocab = ({ unitData, currUser }, props) => {
+const fabStyle = {
+  margin: 0,
+  top: 100,
+  bottom: "auto",
+  right: "4%",
+  left: "auto",
+  position: "fixed",
+};
+
+const EditVocab = ({ unitData, currUser, id }) => {
   const [userVocabData] = useDocument(doc(db, DB_USER_VOCAB, currUser.uid), {});
-  const [stopSave, setStopSave] = useState(false);
   const [rows, setRows] = useState<JSX.Element[]>([]);
   const [customUnit, setCustomUnit] = useState<CustomUnit>();
   const [customVocabs, setCustomVocabs] = useState<Vocab[]>([]);
   const [showToast, setShowToast] = useState(false);
-  const [unitTitle, setTitle] = useState("私の新しいタイトル");
+  const [unitId, setUnitId] = useState(0);
+  const [unitTitle, setTitle] = useState("");
   const [enableSave, setEnableSave] = useState(false);
-  const [goBackAlert, setGoBackAlert] = useState(false);
+
   const router = useRouter();
 
-  //i-set the initial empty vocab
+  //i-set the initial empty vocab if this is for new unit
   useEffect(() => {
     if (!unitData) {
       setCustomVocabs([
@@ -54,19 +63,34 @@ const EditVocab = ({ unitData, currUser }, props) => {
           sentence: "",
         },
       ]);
+    } else {
+      setUnitId(id);
+      setCustomVocabs([...unitData[id].vocabs]);
     }
   }, []);
 
+  useEffect(() => {
+    if (!unitData) setUnitId(new Date().getTime());
+  }, [userVocabData]);
+
   //i- set the unit if vocab changes
   useEffect(() => {
-    setCustomUnit({
-      id: 0,
-      title: unitTitle,
-      vocabs: customVocabs,
-    });
-  }, [customVocabs, unitTitle]);
+    if (unitData) {
+      setCustomUnit({
+        id: id,
+        title: unitData[id].title,
+        vocabs: customVocabs,
+      });
+    } else {
+      setCustomUnit({
+        id: unitId,
+        title: unitTitle,
+        vocabs: customVocabs,
+      });
+    }
+  }, [customVocabs, unitTitle, unitId]);
 
-  //i- add new vocab when customVocabs changed ( + button clicked or initial add)
+  //i- add new vocab when customVocabs changed ( + button clicked)
   useEffect(() => {
     customVocabs.length > 0 &&
       setRows(
@@ -79,7 +103,6 @@ const EditVocab = ({ unitData, currUser }, props) => {
                 customVocabs={customVocabs}
                 setCustomVocabs={setCustomVocabs}
                 setEnableSave={setEnableSave}
-                enableSave={enableSave}
               />
             );
           })
@@ -110,11 +133,7 @@ const EditVocab = ({ unitData, currUser }, props) => {
           return true;
         } else {
           //i- get here if the user click "cancel" and stop going back
-          try {
-            throw "Abort route change by user's confirmation. Ignore this message";
-          } catch {
-            console.log("user canceled route");
-          }
+          throw "Abort route change by user's confirmation. Ignore this message";
         }
       } else {
         //i- get here if no changes made, so going back without confirmation
@@ -134,32 +153,21 @@ const EditVocab = ({ unitData, currUser }, props) => {
     };
   }, [enableSave]);
 
-  const fabStyle = {
-    margin: 0,
-    top: 100,
-    bottom: "auto",
-    right: "4%",
-    left: "auto",
-    position: "fixed",
-  };
-
   const toggleToast = () => {
     setShowToast(!showToast);
   };
 
-  const toggleGoBackAlert = () => setGoBackAlert(!goBackAlert);
-
   const saveUnit = async () => {
     enableSave && setEnableSave(false);
     console.log(customUnit);
-    if (stopSave) {
+    if (!enableSave) {
       console.log("no submission");
     } else {
       const user = getAuth().currentUser;
       if (user) {
         try {
           await updateDoc(doc(db, DB_USER_VOCAB, user.uid), {
-            [unitTitle]: { ...customUnit },
+            [unitId]: { ...customUnit },
           });
           toggleToast();
         } catch {
@@ -187,49 +195,45 @@ const EditVocab = ({ unitData, currUser }, props) => {
 
   const addNewVocab = () => {
     !enableSave && setEnableSave(true);
-    setCustomVocabs([
-      ...customVocabs,
-      {
-        id: customVocabs.length,
-        unit: unitTitle,
-        num: customVocabs.length + 1,
-        parts: "",
-        en: "",
-        noun: "",
-        tverb: "",
-        itverb: "",
-        adj: "",
-        adv: "",
-        prep: "",
-        conn: "",
-        sentence: "",
-      },
-    ]);
+    const currentLast = customVocabs.at(-1);
+    if (currentLast) {
+      setCustomVocabs([
+        ...customVocabs,
+        {
+          id: currentLast.id + 1,
+          unit: unitTitle,
+          num: currentLast.num + 1,
+          parts: "",
+          en: "",
+          noun: "",
+          tverb: "",
+          itverb: "",
+          adj: "",
+          adv: "",
+          prep: "",
+          conn: "",
+          sentence: "",
+        },
+      ]);
+    }
   };
 
-  const checkValue = () => {
-    console.log(enableSave);
-    history.back();
-  };
-
-  //adding a new vocab
   return (
     <Container className="mt-3">
-      <Alert isOpen={goBackAlert} toggle={toggleGoBackAlert}>
-        Go back?
-      </Alert>
+      <Link href={id ? `/vocabulary/user${id}` : "/vocabulary"}>
+        <i className="fa fa-arrow-left" aria-hidden="true" />
+      </Link>
       <Row>
         <Col xs="10" md="8" lg="5" className="me-auto">
           <InputGroup size="lg">
             <InputGroupText>Title:</InputGroupText>
-            <Input onChange={changeUnitName} placeholder="私の新しいタイトル" />
+            <Input
+              onChange={changeUnitName}
+              placeholder="私の新しいタイトル"
+              value={customUnit?.title ? customUnit?.title : ""}
+            />
           </InputGroup>
         </Col>
-        {/* <Col xs="2" className="d-flex justify-content-end">
-          <Button color="primary" onClick={checkValue}>
-            check
-          </Button>
-        </Col> */}
       </Row>
       <Row className="mt-5">
         <Col className="d-flex justify-content-end">
@@ -242,9 +246,6 @@ const EditVocab = ({ unitData, currUser }, props) => {
       {/*i- add button row*/}
       <Row className="justify-content-center">
         <Col xs="1" className="d-flex justify-content-center">
-          {/* <a href="/" onClick={addNewVocab}>
-            
-          </a> */}
           <Button onClick={addNewVocab}>
             <i className="fa fa-plus-square-o" aria-hidden="true" />
           </Button>
