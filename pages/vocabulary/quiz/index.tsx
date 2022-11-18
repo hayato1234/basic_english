@@ -1,14 +1,11 @@
 import { useRouter } from "next/router";
 import React from "react";
-import Link from "next/link";
 import { Container } from "reactstrap";
-import MultQ from "../../../components/MultQ";
-import { UNITS } from "../../../utils/staticValues";
 import MultQA from "../../../components/MultQA";
 import MultQAllUnit from "../../../components/MultQAllUnit";
 import ErrorMessage from "../../../components/ErrorMessage";
 import { getAuth } from "firebase/auth";
-import MultQ2 from "../../../components/MultQ2";
+import MultQ from "../../../components/MultQ";
 
 export enum Modes {
   Multiple,
@@ -19,7 +16,7 @@ export enum Modes {
 const ReturnMode = ({ mode, unitId, inOrder, user }) => {
   switch (+mode) {
     case Modes.Multiple:
-      return <MultQ2 unitId={unitId} inOrder={inOrder} user={user} />;
+      return <MultQ unitId={unitId} inOrder={inOrder} user={user} />;
     case Modes.MultipleAssess:
       return <MultQA />;
     case Modes.MultipleAllUnit:

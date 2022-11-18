@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import React, { useState } from "react";
+import React from "react";
 import { Card, Col, FormGroup, Input, Label, Row } from "reactstrap";
 import { Vocab } from "../../types/vocabType";
 

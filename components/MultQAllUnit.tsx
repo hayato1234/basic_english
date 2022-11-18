@@ -6,7 +6,6 @@ import { db } from "../utils/initAuth";
 import { DB_UNITS } from "../utils/staticValues";
 import {
   Button,
-  Col,
   List,
   ListGroup,
   ListGroupItem,
@@ -133,7 +132,7 @@ const RenderQuiz = ({ originalVocabs }) => {
       </List>
       <QuizFooter
         currentId={currentId}
-        showNext={showAnswer}
+        showNext={showNext}
         goNext={goNext}
         finish={finish}
         numOfQs={numOfQs}
@@ -196,8 +195,8 @@ const RenderQuiz = ({ originalVocabs }) => {
   );
 };
 
-const MultQAllUnit = ({}) => {
-  const [unitsData, unitsDataLoading, unitsDataError] = useCollection(
+const MultQAllUnit = () => {
+  const [unitsData, unitsDataLoading] = useCollection(
     collection(db, DB_UNITS),
     {}
   );

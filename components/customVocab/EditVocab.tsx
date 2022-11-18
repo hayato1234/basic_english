@@ -127,7 +127,9 @@ const EditVocab = ({ unitData, currUser, id }) => {
 
     const handelRouteChange = () => {
       if (enableSave) {
-        if (confirm("You have unsaved changes! 保存せずに移動しますか？")) {
+        if (
+          window.confirm("You have unsaved changes! 保存せずに移動しますか？")
+        ) {
           //i- get here if the user click "ok" and go back
           setEnableSave(false);
           return true;

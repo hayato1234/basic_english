@@ -14,7 +14,6 @@ import {
   Row,
 } from "reactstrap";
 import ReportIssue from "./ReportIssue";
-import PropTypes from "prop-types";
 
 const QuizSettings = ({ isOpen, toggleModal, numOfQs, setNumOfQs }) => {
   const [dropdownNumQ, setDropdownOpen] = useState(false);

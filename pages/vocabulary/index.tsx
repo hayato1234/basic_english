@@ -4,8 +4,8 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import UnitList from "../../components/UnitList";
 
 const styles = require("../../styles/Vocab.module.css");
-const vocabulary = () => {
-  const [user, loading, error] = useAuthState(getAuth());
+const Vocabulary = () => {
+  const [user, loading] = useAuthState(getAuth());
 
   return (
     <div className={styles.unit_body}>
@@ -20,4 +20,4 @@ const vocabulary = () => {
   );
 };
 
-export default vocabulary;
+export default Vocabulary;

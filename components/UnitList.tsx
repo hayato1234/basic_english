@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
   Card,
@@ -20,12 +20,7 @@ import { collection, deleteField, doc, updateDoc } from "firebase/firestore";
 import { db } from "../utils/initAuth";
 import { CustomUnit, Vocab } from "../types/vocabType";
 import Link from "next/link";
-import {
-  UNITS,
-  DB_UNITS,
-  DB_USER_DATA,
-  DB_USER_VOCAB,
-} from "../utils/staticValues";
+import { UNITS, DB_UNITS, DB_USER_VOCAB } from "../utils/staticValues";
 import { Modes } from "../pages/vocabulary/quiz";
 import { useSpring, animated } from "react-spring";
 import { getAuth, User } from "firebase/auth";

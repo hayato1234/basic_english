@@ -11,24 +11,12 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
-  Row,
 } from "reactstrap";
-import {
-  Choice,
-  CustomUnit,
-  CustomUnitList,
-  QuestionData,
-  Vocab,
-} from "../types/vocabType";
+import { Choice, CustomUnit, QuestionData, Vocab } from "../types/vocabType";
 import { shuffle } from "../utils/arraySort";
 import { getOneMeaningForOne } from "../utils/getMeaning";
 import { db } from "../utils/initAuth";
-import {
-  UNITS,
-  DB_UNITS,
-  DB_USER_DATA,
-  DB_USER_VOCAB,
-} from "../utils/staticValues";
+import { DB_UNITS, DB_USER_DATA, DB_USER_VOCAB } from "../utils/staticValues";
 import ErrorMessage from "./ErrorMessage";
 import Link from "next/link";
 import QuizFooter from "./QuizFooter";
@@ -288,7 +276,7 @@ const QuizStructure = ({
   const [choices, setChoices] = useState<Choice[]>([]);
   const [userChoices, setUserChoices] = useState<QuestionData[]>([]);
 
-  const [numOfChoices, setNumOfChoices] = useState(4);
+  const [numOfChoices] = useState(4);
   const [numOfQs, setNumOfQs] = useState(defaultNumOfQs);
 
   const [showAnswer, setShowAnswer] = useState(false);
@@ -298,7 +286,7 @@ const QuizStructure = ({
     if (vocabs) {
       if (!inOrder) setVocab(shuffle(vocabs));
     }
-  }, []);
+  }, [inOrder, vocabs]);
 
   useEffect(() => {
     setCurrentVocab(vocab[currentId]);
@@ -351,14 +339,6 @@ const QuizStructure = ({
 
   const finish = () => {
     toggleModal();
-  };
-
-  const changeNumOfQ = (num: number) => {
-    setNumOfQs(num);
-  };
-
-  const changeNumOfChoices = (num: number) => {
-    setNumOfChoices(num);
   };
 
   const retry = () => {

@@ -6,7 +6,6 @@ import { db } from "../utils/initAuth";
 import { DB_UNITS } from "../utils/staticValues";
 import {
   Button,
-  Col,
   List,
   ListGroup,
   ListGroupItem,
@@ -25,7 +24,7 @@ import QuizFooter from "./QuizFooter";
 import QuizHeader from "./QuizHeader";
 
 const RenderQuiz = ({ originalVocabs }) => {
-  const [vocabs, setVocabs] = useState(originalVocabs);
+  const [vocabs] = useState(originalVocabs);
   const [currentId, setCurrentId] = useState(0);
   const [currentUnit, setCurrentUnit] = useState(1);
   const [currentVocab, setCurrentVocab] = useState(
@@ -263,8 +262,8 @@ const RenderQuiz = ({ originalVocabs }) => {
   );
 };
 
-const MultQA = ({}) => {
-  const [unitsData, unitsDataLoading, unitsDataError] = useCollection(
+const MultQA = () => {
+  const [unitsData, unitsDataLoading] = useCollection(
     collection(db, DB_UNITS),
     {}
   );

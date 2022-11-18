@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useDocument } from "react-firebase-hooks/firestore";
@@ -178,7 +178,7 @@ const RenderDetail = ({ unitId, unitData, userUid }) => {
 };
 
 const PresetUnitDetail = ({ unitId, userUid }) => {
-  const [vocab, vocabLoading, vocabError] = useDocument(
+  const [vocab, vocabLoading] = useDocument(
     doc(db, DB_UNITS, `unit${unitId}`),
     {}
   );
