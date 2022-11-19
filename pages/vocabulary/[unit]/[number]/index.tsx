@@ -13,14 +13,30 @@ import {
   PARTS_LIST,
   PARTS_TO_JPN,
   DB_UNITS,
+  DB_USER_VOCAB,
 } from "../../../../utils/staticValues";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { getAuth } from "firebase/auth";
+import ErrorMessage from "../../../../components/ErrorMessage";
 
 const styles = require("../../../../styles/Vocab.module.css");
 
-export const ShowVocabDetail = ({ vocabData, vocabId, unitId }) => {
-  const vocab = vocabData.list.filter((v: Vocab) => v.num === vocabId)[0];
-  const firstVocabId = vocabData.list[0].num;
-  const lastVocabId = vocabData.list.at(-1).num;
+type props = {
+  vocabs: Vocab[];
+  vocabId: number;
+  unitId: number;
+  customUnit: boolean;
+};
+
+export const RenderVocabDetail = ({
+  vocabs,
+  vocabId,
+  unitId,
+  customUnit,
+}: props) => {
+  const vocab = vocabs.filter((v: Vocab) => v.num === vocabId)[0];
+  const firstVocabId = vocabs[0].num;
+  const lastVocabId = vocabs[vocabs.length - 1].num;
 
   const [isModalOpen, setModalOpen] = useState(false);
 
@@ -75,8 +91,11 @@ export const ShowVocabDetail = ({ vocabData, vocabId, unitId }) => {
             </Col>
           )}
           <Col xs={3}>
-            <Link href={"/vocabulary/[unit]"} as={`/vocabulary/${unitId}`}>
-              {`Unit${unitId}に戻る`}
+            <Link
+              href={"/vocabulary/[unit]"}
+              as={`/vocabulary/${customUnit ? "user" + unitId : unitId}`}
+            >
+              {`Unit${vocab.unit}に戻る`}
             </Link>
           </Col>
           {vocab.num < lastVocabId && (
@@ -104,20 +123,80 @@ export const ShowVocabDetail = ({ vocabData, vocabId, unitId }) => {
   }
 };
 
+const ShowVocabDetail = ({ vocabId, unitId }) => {
+  const [vocabData, vocabLoading] = useDocument(
+    doc(db, DB_UNITS, `unit${unitId}`),
+    {}
+  );
+  let vocabs = vocabData ? vocabData.data()!.list : undefined;
+  return (
+    <>
+      {vocabLoading ? (
+        <h5>Loading...</h5>
+      ) : vocabData ? (
+        <RenderVocabDetail
+          vocabs={vocabs}
+          vocabId={vocabId}
+          unitId={unitId}
+          customUnit={false}
+        />
+      ) : (
+        <p>Error loading</p>
+      )}
+    </>
+  );
+};
+
+const ShowCustomVocabDetail = ({ vocabId, unitId, userUid }) => {
+  const [userUnitsData, userUnitsDataLoading] = useDocument(
+    doc(db, DB_USER_VOCAB, userUid),
+    {}
+  );
+  let vocabsData = userUnitsData ? userUnitsData.data()![+unitId] : undefined;
+  let vocabs = vocabsData ? vocabsData.vocabs : undefined;
+  return (
+    <>
+      {userUnitsDataLoading ? (
+        <h5>Loading...</h5>
+      ) : vocabs ? (
+        <RenderVocabDetail
+          vocabs={vocabs}
+          vocabId={vocabId}
+          unitId={unitId}
+          customUnit={true}
+        />
+      ) : (
+        <p>Error loading</p>
+      )}
+    </>
+  );
+};
+
 const VocabDetail = () => {
+  const [user, userLoading] = useAuthState(getAuth());
   const router = useRouter();
   const data = router.query;
   const unitId = data.unit ? +data.unit : 0;
   const vocabId = data.number ? +data.number : 0;
 
-  const [vocabData, vocabLoading, vocabError] = useDocument(
-    doc(db, DB_UNITS, `unit${unitId}`),
-    {}
-  );
+  // console.log(unitId);
 
   return (
     <Container fluid>
-      {vocabLoading ? (
+      {+unitId < 5 ? (
+        <ShowVocabDetail vocabId={vocabId} unitId={unitId} />
+      ) : userLoading ? (
+        <p>User info loading</p>
+      ) : user ? (
+        <ShowCustomVocabDetail
+          vocabId={vocabId}
+          unitId={unitId}
+          userUid={user.uid}
+        />
+      ) : (
+        <p>Error loading your vocabulary</p>
+      )}
+      {/* {vocabLoading ? (
         <h5>Loading...</h5>
       ) : vocabData ? (
         <ShowVocabDetail
@@ -126,8 +205,9 @@ const VocabDetail = () => {
           unitId={unitId}
         />
       ) : (
+        // <></>
         <p>{vocabError?.message}</p>
-      )}
+      )} */}
     </Container>
   );
 };

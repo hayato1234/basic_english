@@ -1,7 +1,8 @@
-import { useFormik } from "formik";
-import React from "react";
+import { ErrorMessage, useFormik } from "formik";
+import React, { useEffect } from "react";
 import { Card, Col, FormGroup, Input, Label, Row } from "reactstrap";
 import { Vocab } from "../../types/vocabType";
+import { validateEditVocab } from "../../utils/validation";
 
 const VocabRow = ({ num, customVocabs, setCustomVocabs, setEnableSave }) => {
   const vocab: Vocab = customVocabs[num - 1];
@@ -17,11 +18,19 @@ const VocabRow = ({ num, customVocabs, setCustomVocabs, setEnableSave }) => {
       conn: vocab.conn,
       sentence: vocab.sentence,
     },
+    validate: validateEditVocab,
     onSubmit: (values) => {
       console.log(JSON.stringify(values));
     },
   });
 
+  useEffect(() => {
+    if (formik.errors) {
+      setEnableSave(false);
+    }
+  }, [formik.errors]);
+
+  //e: React.ChangeEvent<any>
   const handleChange = (e: React.ChangeEvent<any>) => {
     e.preventDefault();
 
@@ -89,7 +98,11 @@ const VocabRow = ({ num, customVocabs, setCustomVocabs, setEnableSave }) => {
                     placeholder="English..."
                     className="form-control"
                     onChange={handleChange}
+                    onBlur={formik.handleBlur}
                   />
+                  {formik.touched.en && formik.errors && (
+                    <p className="text-danger">{formik.errors.en}</p>
+                  )}
                 </Col>
               </FormGroup>
             </form>
@@ -101,6 +114,10 @@ const VocabRow = ({ num, customVocabs, setCustomVocabs, setEnableSave }) => {
               <Label htmlFor="noun" md="10">
                 日本語(当てはまる物だけ)
               </Label>
+              {formik.touched.noun && formik.errors.noun && (
+                <p className="text-danger">{formik.errors.noun}</p>
+              )}
+              {/* !!!! floading not working! */}
               <FormGroup floating>
                 <Col md="10">
                   <Input
@@ -110,8 +127,10 @@ const VocabRow = ({ num, customVocabs, setCustomVocabs, setEnableSave }) => {
                     placeholder="名詞..."
                     className="form-control"
                     onChange={handleChange}
+                    onBlur={formik.handleBlur}
                   />
                 </Col>
+
                 <Col md="10">
                   <Input
                     id="tverb"
@@ -120,6 +139,7 @@ const VocabRow = ({ num, customVocabs, setCustomVocabs, setEnableSave }) => {
                     placeholder="他動詞..."
                     className="form-control"
                     onChange={handleChange}
+                    onBlur={formik.handleBlur}
                   />
                 </Col>
                 <Col md="10">
@@ -130,6 +150,7 @@ const VocabRow = ({ num, customVocabs, setCustomVocabs, setEnableSave }) => {
                     placeholder="自動詞..."
                     className="form-control"
                     onChange={handleChange}
+                    onBlur={formik.handleBlur}
                   />
                 </Col>
                 <Col md="10">
@@ -140,6 +161,7 @@ const VocabRow = ({ num, customVocabs, setCustomVocabs, setEnableSave }) => {
                     placeholder="形容詞..."
                     className="form-control"
                     onChange={handleChange}
+                    onBlur={formik.handleBlur}
                   />
                 </Col>
                 <Col md="10">
@@ -150,8 +172,42 @@ const VocabRow = ({ num, customVocabs, setCustomVocabs, setEnableSave }) => {
                     placeholder="副詞..."
                     className="form-control"
                     onChange={handleChange}
+                    onBlur={formik.handleBlur}
                   />
                 </Col>
+                <Col md="10">
+                  <Input
+                    id="prep"
+                    name="prep"
+                    value={formik.values.prep}
+                    placeholder="前置詞..."
+                    className="form-control"
+                    onChange={handleChange}
+                    onBlur={formik.handleBlur}
+                  />
+                </Col>
+                <Col md="10">
+                  <Input
+                    id="conn"
+                    name="conn"
+                    value={formik.values.conn}
+                    placeholder="接続詞..."
+                    className="form-control"
+                    onChange={handleChange}
+                    onBlur={formik.handleBlur}
+                  />
+                </Col>
+                {/* <Col md="10">
+                  <Input
+                    id="other"
+                    name="other"
+                    value={formik.values.adv}
+                    placeholder="その他..."
+                    className="form-control"
+                    onChange={handleChange}
+                    onBlur={formik.handleBlur}
+                  />
+                </Col> */}
               </FormGroup>
             </form>
           </Card>

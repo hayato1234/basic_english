@@ -5,7 +5,6 @@ import EditVocab from "../../components/customVocab/EditVocab";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 const Edit = (): JSX.Element => {
-  // const { title: unitTitle } = useRouter().query;
   const [user] = useAuthState(getAuth());
 
   if (!user)

@@ -20,7 +20,13 @@ import { collection, deleteField, doc, updateDoc } from "firebase/firestore";
 import { db } from "../utils/initAuth";
 import { CustomUnit, Vocab } from "../types/vocabType";
 import Link from "next/link";
-import { UNITS, DB_UNITS, DB_USER_VOCAB } from "../utils/staticValues";
+import {
+  UNITS,
+  DB_UNITS,
+  DB_USER_VOCAB,
+  DB_USER_DATA,
+} from "../utils/staticValues";
+import { history } from "../types/userType";
 import { Modes } from "../pages/vocabulary/quiz";
 import { useSpring, animated } from "react-spring";
 import { getAuth, User } from "firebase/auth";
@@ -100,6 +106,7 @@ const UnitTiles = ({ unitData, unitId }) => {
 };
 
 const RenderCustomUnit = ({ unitData, userId }) => {
+  const [userData] = useDocument(doc(db, DB_USER_DATA, userId), {});
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState<CustomUnit>();
   const userUnits: CustomUnit[] = Object.values(unitData);
@@ -122,6 +129,30 @@ const RenderCustomUnit = ({ unitData, userId }) => {
         await updateDoc(doc(db, DB_USER_VOCAB, userId), {
           [selectedUnit.id]: deleteField(),
         });
+        const allUserData = userData?.data();
+        if (allUserData) {
+          if (allUserData?.history) {
+            //i- get here if history exists
+            const typeVocab = "vocabulary";
+            if (
+              allUserData.history.find(
+                (h: history) =>
+                  h.type === typeVocab &&
+                  h.unitData.id === "user" + selectedUnit.id
+              )
+            ) {
+              //i- get here if the unit already exist in history, so delete the unit and make new history
+              const newList = allUserData?.history.filter(
+                (h: history) =>
+                  h.type === typeVocab &&
+                  h.unitData.id !== "user" + selectedUnit.id
+              );
+              await updateDoc(doc(db, DB_USER_DATA, userId), {
+                history: [...newList],
+              });
+            }
+          }
+        }
       } catch {
         console.log("failed to delete");
       } finally {
@@ -223,8 +254,10 @@ const CustomUnitTiles = ({ user }: { user: User }) => {
               <Card className={styles.card}>
                 <CardHeader>Add vocabulary</CardHeader>
                 <CardBody>
-                  <CardTitle tag="h6">準備中</CardTitle>
-                  <CardText>"準備中"</CardText>
+                  <CardTitle tag="h6">自分の単語を追加</CardTitle>
+                  <CardText tag="p">
+                    自分専用の単語（他の人は見れない）
+                  </CardText>
                 </CardBody>
               </Card>
             </Link>

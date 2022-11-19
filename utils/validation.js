@@ -5,3 +5,24 @@ export const validateSearchForm = (values) => {
   }
   return errors;
 };
+
+export const validateEditVocab = (values) => {
+  const errors = {};
+
+  if (!values.en) {
+    errors.en = "required";
+  }
+  const jpFilled =
+    values.noun ||
+    values.tverb ||
+    values.itverb ||
+    values.adj ||
+    values.adv ||
+    values.conn ||
+    values.prep;
+  if (!jpFilled) {
+    errors.noun = "At least one required";
+  }
+
+  return errors;
+};

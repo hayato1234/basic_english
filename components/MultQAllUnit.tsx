@@ -95,6 +95,7 @@ const RenderQuiz = ({ originalVocabs }) => {
         currentId={currentId}
         numOfQs={numOfQs}
         setNumOfQs={setNumOfQs}
+        maxNumOfQs={vocabs.length}
       />
       <h1>{currentVocab.en}</h1>
       <List type="unstyled">

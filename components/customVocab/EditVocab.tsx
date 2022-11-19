@@ -65,6 +65,7 @@ const EditVocab = ({ unitData, currUser, id }) => {
       ]);
     } else {
       setUnitId(id);
+      setTitle(unitData[id].title);
       setCustomVocabs([...unitData[id].vocabs]);
     }
   }, []);
@@ -160,6 +161,23 @@ const EditVocab = ({ unitData, currUser, id }) => {
   };
 
   const saveUnit = async () => {
+    const emptyVocabList = customVocabs
+      .filter(
+        (v: Vocab) =>
+          !v.en ||
+          !(v.noun || v.tverb || v.itverb || v.adj || v.adv || v.prep || v.conn)
+      )
+      .map((v: Vocab) => v.num);
+    if (emptyVocabList.length > 0) {
+      enableSave && setEnableSave(false);
+      alert(
+        `Empty fields-cannot save. \nid ${emptyVocabList.join(
+          ","
+        )}にエラーがあります。`
+      );
+      console.log("unsaved item exists");
+      return;
+    }
     enableSave && setEnableSave(false);
     console.log(customUnit);
     if (!enableSave) {

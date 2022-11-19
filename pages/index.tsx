@@ -183,7 +183,7 @@ const Home = () => {
   return (
     <div>
       {loading ? (
-        <p>Logging in</p>
+        <p>Loading data...</p>
       ) : error ? (
         <p>{error?.message}</p>
       ) : user ? (

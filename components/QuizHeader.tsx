@@ -15,7 +15,13 @@ import {
 } from "reactstrap";
 import ReportIssue from "./ReportIssue";
 
-const QuizSettings = ({ isOpen, toggleModal, numOfQs, setNumOfQs }) => {
+const QuizSettings = ({
+  isOpen,
+  toggleModal,
+  numOfQs,
+  setNumOfQs,
+  maxNumOfQs,
+}) => {
   const [dropdownNumQ, setDropdownOpen] = useState(false);
   const toggleNumQ = () => setDropdownOpen(!dropdownNumQ);
   return (
@@ -30,11 +36,25 @@ const QuizSettings = ({ isOpen, toggleModal, numOfQs, setNumOfQs }) => {
             <Dropdown isOpen={dropdownNumQ} toggle={toggleNumQ}>
               <DropdownToggle caret>{numOfQs}</DropdownToggle>
               <DropdownMenu>
-                <DropdownItem onClick={() => setNumOfQs(25)}>25</DropdownItem>
-                <DropdownItem onClick={() => setNumOfQs(50)}>50</DropdownItem>
-                <DropdownItem onClick={() => setNumOfQs(75)}>75</DropdownItem>
-                <DropdownItem onClick={() => setNumOfQs(100)}>100</DropdownItem>
-                <DropdownItem onClick={() => setNumOfQs(200)}>200</DropdownItem>
+                {maxNumOfQs >= 25 && (
+                  <DropdownItem onClick={() => setNumOfQs(25)}>25</DropdownItem>
+                )}
+                {maxNumOfQs >= 50 && (
+                  <DropdownItem onClick={() => setNumOfQs(50)}>50</DropdownItem>
+                )}
+                {maxNumOfQs >= 75 && (
+                  <DropdownItem onClick={() => setNumOfQs(75)}>75</DropdownItem>
+                )}
+                {maxNumOfQs >= 100 && (
+                  <DropdownItem onClick={() => setNumOfQs(100)}>
+                    100
+                  </DropdownItem>
+                )}
+                {maxNumOfQs >= 200 && (
+                  <DropdownItem onClick={() => setNumOfQs(200)}>
+                    200
+                  </DropdownItem>
+                )}
               </DropdownMenu>
             </Dropdown>
           </Col>
@@ -56,6 +76,7 @@ const QuizHeader = ({
   currentId,
   numOfQs,
   setNumOfQs,
+  maxNumOfQs,
 }) => {
   const [isReportModalOpen, setReportModalOpen] = useState(false);
   const [isSettingsModalOpen, setSettingsModalOpen] = useState(false);
@@ -108,6 +129,7 @@ const QuizHeader = ({
         toggleModal={toggleSettings}
         numOfQs={numOfQs}
         setNumOfQs={setNumOfQs}
+        maxNumOfQs={maxNumOfQs}
       />
     </>
   );

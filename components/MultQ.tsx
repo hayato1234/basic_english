@@ -360,10 +360,11 @@ const QuizStructure = ({
       <QuizHeader
         linkHref="/vocabulary/[unit]"
         linkAs={`/vocabulary/${unitId}`}
-        title={`選択クイズ - Unit: ${unitId}`}
+        title={`選択クイズ - Unit: ${currentVocab && currentVocab.unit}`}
         currentId={currentId}
         numOfQs={numOfQs}
         setNumOfQs={setNumOfQs}
+        maxNumOfQs={vocab.length}
       />
 
       <h1>{currentVocab.en}</h1>
