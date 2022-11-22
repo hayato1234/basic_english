@@ -21,6 +21,8 @@ import { history } from "../../../types/userType";
 import { CustomUnit } from "../../../types/vocabType";
 import { useAuthState } from "react-firebase-hooks/auth";
 
+const styles = require("../../../styles/Vocab.module.css");
+
 type historyProps = {
   userUid: string;
   unitId: string;
@@ -132,7 +134,9 @@ const RenderDetail = ({ unitId, unitData, userUid }) => {
                 }}
                 passHref
               >
-                <Button>4択クイズ(ランダム順番)</Button>
+                <a className={styles.linkWrapper}>
+                  <Button>4択クイズ(ランダム順番)</Button>
+                </a>
               </Link>
             </Col>
           </Row>
@@ -149,7 +153,9 @@ const RenderDetail = ({ unitId, unitData, userUid }) => {
                 }}
                 passHref
               >
-                <Button>4択クイズ(単語番号順)</Button>
+                <a className={styles.linkWrapper}>
+                  <Button>4択クイズ(単語番号順)</Button>
+                </a>
               </Link>
             </Col>
           </Row>
@@ -234,7 +240,9 @@ const RenderCustomDetail = ({ unitId, unitData, userUid }) => {
                 }}
                 passHref
               >
-                <Button>4択クイズ(ランダム順番)</Button>
+                <a className={styles.linkWrapper}>
+                  <Button>4択クイズ(ランダム順番)</Button>
+                </a>
               </Link>
             </Col>
           </Row>
@@ -251,7 +259,9 @@ const RenderCustomDetail = ({ unitId, unitData, userUid }) => {
                 }}
                 passHref
               >
-                <Button>4択クイズ(単語番号順)</Button>
+                <a className={styles.linkWrapper}>
+                  <Button>4択クイズ(単語番号順)</Button>
+                </a>
               </Link>
             </Col>
           </Row>

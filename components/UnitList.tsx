@@ -59,33 +59,37 @@ const UnitTiles = ({ unitData, unitId }) => {
       {vocabs ? (
         <animated.div style={moveUpUnits}>
           <Link href="/vocabulary/[unit]" as={`/vocabulary/${unitId}`} passHref>
-            <Card
-              className={styles.card}
-              style={{ borderColor: cardColors[unitId], borderWidth: "2px" }}
-            >
-              <CardHeader>{`Unit ${unitId}`}</CardHeader>
-              <CardBody>
-                <CardTitle tag="p">Examples:</CardTitle>
-                <CardText className="ms-2">
-                  {vocabs[Math.floor(Math.random() * vocabs.length)].en}
-                </CardText>
-                <CardText className="ms-2">
-                  {vocabs[Math.floor(Math.random() * vocabs.length)].en}
-                </CardText>
-              </CardBody>
-            </Card>
+            <a className={styles.linkWrapper}>
+              <Card
+                className={styles.card}
+                style={{ borderColor: cardColors[unitId], borderWidth: "2px" }}
+              >
+                <CardHeader>{`Unit ${unitId}`}</CardHeader>
+                <CardBody>
+                  <CardTitle tag="p">Examples:</CardTitle>
+                  <CardText className="ms-2">
+                    {vocabs[Math.floor(Math.random() * vocabs.length)].en}
+                  </CardText>
+                  <CardText className="ms-2">
+                    {vocabs[Math.floor(Math.random() * vocabs.length)].en}
+                  </CardText>
+                </CardBody>
+              </Card>
+            </a>
           </Link>
         </animated.div>
       ) : getAuth().currentUser ? (
         <animated.div style={moveUpUnits}>
           <Link href="/edit">
-            <Card className={styles.card}>
-              <CardHeader>{`${unitId}`}</CardHeader>
-              <CardBody>
-                <CardTitle tag="h6">準備中</CardTitle>
-                <CardText>"準備中"</CardText>
-              </CardBody>
-            </Card>
+            <a className={styles.linkWrapper}>
+              <Card className={styles.card}>
+                <CardHeader>{`${unitId}`}</CardHeader>
+                <CardBody>
+                  <CardTitle tag="h6">準備中</CardTitle>
+                  <CardText>"準備中"</CardText>
+                </CardBody>
+              </Card>
+            </a>
           </Link>
         </animated.div>
       ) : (
@@ -165,13 +169,13 @@ const RenderCustomUnit = ({ unitData, userId }) => {
       {userUnits &&
         userUnits.map((userUnit) => {
           return (
-            <>
-              <Col sm="6" md="4" lg="3">
-                <Link
-                  href="/vocabulary/[unit]"
-                  as={`/vocabulary/user${userUnit.id}`}
-                  passHref
-                >
+            <Col key={userUnit.id} sm="6" md="4" lg="3">
+              <Link
+                href="/vocabulary/[unit]"
+                as={`/vocabulary/user${userUnit.id}`}
+                passHref
+              >
+                <a className={styles.linkWrapper}>
                   <Card
                     className={styles.card}
                     style={{
@@ -206,9 +210,9 @@ const RenderCustomUnit = ({ unitData, userId }) => {
                       )}
                     </CardBody>
                   </Card>
-                </Link>
-              </Col>
-            </>
+                </a>
+              </Link>
+            </Col>
           );
         })}
       <Modal isOpen={modalOpen} toggle={toggleDeleteModal}>
@@ -251,15 +255,15 @@ const CustomUnitTiles = ({ user }: { user: User }) => {
         <Row className="mb-5">
           <Col sm="6" md="4" lg="3">
             <Link href="/edit">
-              <Card className={styles.card}>
-                <CardHeader>Add vocabulary</CardHeader>
-                <CardBody>
-                  <CardTitle tag="h6">自分の単語を追加</CardTitle>
-                  <CardText tag="p">
-                    自分専用の単語（他の人は見れない）
-                  </CardText>
-                </CardBody>
-              </Card>
+              <a className={styles.linkWrapper}>
+                <Card className={styles.card}>
+                  <CardHeader>Add vocabulary</CardHeader>
+                  <CardBody>
+                    <CardTitle tag="h6">自分の単語を追加</CardTitle>
+                    <CardText tag="p">自分専用の単語</CardText>
+                  </CardBody>
+                </Card>
+              </a>
             </Link>
           </Col>
           {userUnitsDataLoading ? (
@@ -310,15 +314,17 @@ const UnitList = ({ user }: { user: User | null }) => {
               }}
               passHref
             >
-              <Card className={styles.card}>
-                <CardHeader>Level Assessment</CardHeader>
-                <CardBody>
-                  <CardTitle tag="p">
-                    自己診断：
-                    どのユニットから始めるか自分のレベルを確認しよう！(何度でも挑戦可)
-                  </CardTitle>
-                </CardBody>
-              </Card>
+              <a className={styles.linkWrapper}>
+                <Card className={styles.card}>
+                  <CardHeader>Level Assessment</CardHeader>
+                  <CardBody>
+                    <CardTitle tag="p">
+                      自己診断：
+                      どのユニットから始めるか自分のレベルを確認しよう！(何度でも挑戦可)
+                    </CardTitle>
+                  </CardBody>
+                </Card>
+              </a>
             </Link>
           </animated.div>
         </Col>
@@ -335,14 +341,16 @@ const UnitList = ({ user }: { user: User | null }) => {
               }}
               passHref
             >
-              <Card className={styles.card}>
-                <CardHeader>All Units</CardHeader>
-                <CardBody>
-                  <CardTitle tag="p">
-                    全てのUnitの単語が混ざったクイズに挑戦
-                  </CardTitle>
-                </CardBody>
-              </Card>
+              <a className={styles.linkWrapper}>
+                <Card className={styles.card}>
+                  <CardHeader>All Units</CardHeader>
+                  <CardBody>
+                    <CardTitle tag="p">
+                      全てのUnitの単語が混ざったクイズに挑戦
+                    </CardTitle>
+                  </CardBody>
+                </Card>
+              </a>
             </Link>
           </animated.div>
         </Col>

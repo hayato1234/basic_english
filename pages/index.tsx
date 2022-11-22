@@ -54,20 +54,17 @@ const RecentStudies = ({ user }) => {
       recentCards.push(
         <Col key={historyType + historyUnit.id} sm="6" md="4" lg="3">
           <animated.div style={moveUpRecent}>
-            <Link
-              role="button"
-              href="/[type]/[unit]"
-              as={historyUnitId}
-              passHref
-            >
-              <Card className={styles.card}>
-                <CardHeader>
-                  {historyType === "vocabulary"
-                    ? STUDY_TITLES.vocabulary
-                    : STUDY_TITLES.grammar}
-                </CardHeader>
-                <CardBody>{historyUnit.title}</CardBody>
-              </Card>
+            <Link role="button" href="/[type]/[unit]" as={historyUnitId}>
+              <a className={styles.linkWrapper}>
+                <Card innerRef={undefined} className={styles.card}>
+                  <CardHeader>
+                    {historyType === "vocabulary"
+                      ? STUDY_TITLES.vocabulary
+                      : STUDY_TITLES.grammar}
+                  </CardHeader>
+                  <CardBody>{historyUnit.title}</CardBody>
+                </Card>
+              </a>
             </Link>
           </animated.div>
         </Col>
@@ -100,11 +97,13 @@ const Home = () => {
       <Row>
         <Col sm="6" md="4" lg="3">
           <animated.div style={moveUp}>
-            <Link href="/vocabulary">
-              <Card className={`${styles.card}`}>
-                <CardHeader>{STUDY_TITLES.vocabulary}</CardHeader>
-                <CardBody>TOEICに必要な単語をUnitごとに勉強しよう！</CardBody>
-              </Card>
+            <Link href="/vocabulary" passHref>
+              <a className={styles.linkWrapper}>
+                <Card className={`${styles.card}`}>
+                  <CardHeader>{STUDY_TITLES.vocabulary}</CardHeader>
+                  <CardBody>TOEICに必要な単語をUnitごとに勉強しよう！</CardBody>
+                </Card>
+              </a>
             </Link>
           </animated.div>
         </Col>
@@ -121,13 +120,15 @@ const Home = () => {
               }}
               passHref
             >
-              <Card className={styles.card}>
-                <CardHeader>単語 - Level Assessment</CardHeader>
-                <CardBody>
-                  自己診断：
-                  どのユニットから始めるか自分のレベルを確認しよう！(何度でも挑戦可)
-                </CardBody>
-              </Card>
+              <a className={styles.linkWrapper}>
+                <Card className={styles.card}>
+                  <CardHeader>単語 - Level Assessment</CardHeader>
+                  <CardBody>
+                    自己診断：
+                    どのユニットから始めるか自分のレベルを確認しよう！(何度でも挑戦可)
+                  </CardBody>
+                </Card>
+              </a>
             </Link>
           </animated.div>
         </Col>
@@ -135,13 +136,15 @@ const Home = () => {
           <animated.div style={moveUp}>
             {user ? (
               <Link href="/edit">
-                <Card className={styles.card}>
-                  <CardHeader>{`Add vocabulary`}</CardHeader>
-                  <CardBody>
-                    <CardTitle tag="h6">準備中</CardTitle>
-                    <CardText>"準備中"</CardText>
-                  </CardBody>
-                </Card>
+                <a className={styles.linkWrapper}>
+                  <Card className={styles.card}>
+                    <CardHeader>{`Add vocabulary`}</CardHeader>
+                    <CardBody>
+                      <CardTitle tag="h6">準備中</CardTitle>
+                      <CardText>"準備中"</CardText>
+                    </CardBody>
+                  </Card>
+                </a>
               </Link>
             ) : (
               <Card>
@@ -159,12 +162,14 @@ const Home = () => {
         <Col sm="6" md="4" lg="3">
           <animated.div style={moveUp}>
             <Link href="/grammar">
-              <Card className={styles.card}>
-                <CardHeader>{STUDY_TITLES.grammar}</CardHeader>
-                <CardBody>
-                  基礎英文法を中心に、トピックごとに学習しよう！
-                </CardBody>
-              </Card>
+              <a className={styles.linkWrapper}>
+                <Card className={styles.card}>
+                  <CardHeader>{STUDY_TITLES.grammar}</CardHeader>
+                  <CardBody>
+                    基礎英文法を中心に、トピックごとに学習しよう！
+                  </CardBody>
+                </Card>
+              </a>
             </Link>
           </animated.div>
         </Col>
@@ -181,7 +186,7 @@ const Home = () => {
   );
 
   return (
-    <div>
+    <>
       {loading ? (
         <p>Loading data...</p>
       ) : error ? (
@@ -194,7 +199,7 @@ const Home = () => {
           {dashBoard}
         </>
       )}
-    </div>
+    </>
   );
 };
 

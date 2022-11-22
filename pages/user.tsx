@@ -74,12 +74,33 @@ const RenderUserPage = ({ user }: { user: User }) => {
           </Row>
           <hr />
           <h2>History Data</h2>
-          {userData?.data() &&
-            userData
-              .data()
-              ?.history.map((h: history) => (
-                <span className="me-2 border border-primary">{`${h.type} - ${h.unitData[0]}`}</span>
+          <Row>
+            {userData?.data() &&
+              userData.data()?.history.map((h: history) => (
+                // <span
+                //   key={h.type + h.unitData.id}
+                //   style={{
+                //     background: "#20B2AA",
+                //     marginRight: "10px",
+                //     padding: "5px",
+                //     borderRadius: "5px",
+                //   }}
+                //   // className="me-2 border border-primary"
+                // >{`${h.unitData.title}`}</span>
+                <Col
+                  xs="5"
+                  md="2"
+                  key={h.type + h.unitData.id}
+                  style={{
+                    background: "#20B2AA",
+                    margin: "10px",
+                    padding: "5px",
+                    borderRadius: "5px",
+                  }}
+                  // className="me-2 border border-primary"
+                >{`${h.unitData.title}`}</Col>
               ))}
+          </Row>
           <hr />
           <h2>Vocabulary Data</h2>
           <h5>お気に入り</h5>

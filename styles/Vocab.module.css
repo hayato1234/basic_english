@@ -23,6 +23,13 @@
   border-color: #0070f3;
 }
 
+/* without the anchor, custom components will give errors*/
+.linkWrapper {
+  text-decoration: none;
+  color: inherit;
+  cursor: auto;
+}
+
 .list {
   border: 1px solid black;
   border-radius: 10px;

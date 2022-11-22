@@ -15,6 +15,7 @@ import {
   UncontrolledPopover,
   PopoverBody,
   Button,
+  Popover,
 } from "reactstrap";
 
 //i- regular import gives warning (due to typescript)
@@ -23,15 +24,17 @@ const styles = require("../styles/Header.module.css");
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [signInWithGoogle] = useSignInWithGoogle(getAuth());
-  const [user] = useAuthState(getAuth());
-  // const user = getAuth().currentUser;
+  const [user, userLoading, userError] = useAuthState(getAuth());
+  const [isPopoverOpen, setPopoverOpen] = useState(false);
 
-  // userError && console.log(userError);
-  // console.log(user?.photoURL);
+  if (userError) console.log("header error:", userError.message);
 
   const closeNav = () => {
     //when nav item clicked, the nav doesn't close without this.
     setMenuOpen(false);
+  };
+  const togglePopover = () => {
+    setPopoverOpen(!isPopoverOpen);
   };
 
   return (
@@ -58,43 +61,73 @@ const Header = () => {
             </Link>
           </NavItem>
         </Nav>
-        {user && user.photoURL && (
-          <NavbarText>
-            <Button
-              id="userPhoto"
-              role="button"
-              style={{ backgroundColor: "transparent", border: 0 }}
-            >
-              <img
-                src={user.photoURL}
-                className={styles.user_icon}
-                alt="icon"
-              />
-            </Button>
+        {userLoading ? (
+          <p>...</p>
+        ) : (
+          user &&
+          user.photoURL && (
+            <NavbarText>
+              <Button
+                id="userPhoto"
+                role="button"
+                style={{ backgroundColor: "transparent", border: 0 }}
+              >
+                <img
+                  referrerPolicy="no-referrer"
+                  src={user.photoURL}
+                  className={styles.user_icon}
+                  alt="icon"
+                />
+              </Button>
 
-            <UncontrolledPopover
-              target="userPhoto"
-              placement="bottom"
-              trigger="legacy"
-            >
-              <PopoverBody>
-                <Link passHref href="/user">
-                  <NavLink onClick={closeNav}>
-                    <i className="fa fa-user" aria-hidden="true" /> Profile
-                  </NavLink>
-                </Link>
-                <Link passHref href="/settings">
-                  <NavLink onClick={closeNav}>
-                    <i className="fa fa-cog" aria-hidden="true" /> Settings
-                  </NavLink>
-                </Link>
-                <hr />
-                <a role="button" onClick={() => signOut(getAuth())} href="#/">
-                  <i className="fa fa-sign-out" aria-hidden="true" /> Logout
-                </a>
-              </PopoverBody>
-            </UncontrolledPopover>
-          </NavbarText>
+              <Popover
+                target="userPhoto"
+                toggle={togglePopover}
+                isOpen={isPopoverOpen}
+                trigger="legacy"
+              >
+                <PopoverBody>
+                  <Link passHref href="/user">
+                    <NavLink onClick={closeNav}>
+                      <i className="fa fa-user" aria-hidden="true" /> Profile
+                    </NavLink>
+                  </Link>
+                  <Link passHref href="/settings">
+                    <NavLink onClick={closeNav}>
+                      <i className="fa fa-cog" aria-hidden="true" /> Settings
+                    </NavLink>
+                  </Link>
+                  <hr />
+                  <a role="button" onClick={() => signOut(getAuth())} href="#/">
+                    <i className="fa fa-sign-out" aria-hidden="true" /> Logout
+                  </a>
+                </PopoverBody>
+              </Popover>
+              {/* <UncontrolledPopover
+                target="userPhoto"
+                placement="bottom"
+                trigger="legacy"
+                
+              >
+                <PopoverBody>
+                  <Link passHref href="/user">
+                    <NavLink onClick={closeNav}>
+                      <i className="fa fa-user" aria-hidden="true" /> Profile
+                    </NavLink>
+                  </Link>
+                  <Link passHref href="/settings">
+                    <NavLink onClick={closeNav}>
+                      <i className="fa fa-cog" aria-hidden="true" /> Settings
+                    </NavLink>
+                  </Link>
+                  <hr />
+                  <a role="button" onClick={() => signOut(getAuth())} href="#/">
+                    <i className="fa fa-sign-out" aria-hidden="true" /> Logout
+                  </a>
+                </PopoverBody>
+              </UncontrolledPopover> */}
+            </NavbarText>
+          )
         )}
         {!user && (
           <NavbarText onClick={closeNav}>

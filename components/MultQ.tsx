@@ -98,7 +98,7 @@ const RenderQuizWithUser = ({ vocabsData, inOrder, unitId, currUser }) => {
       userData !== undefined &&
       userData.data() !== undefined
     ) {
-      const unitField = "unit" + unitId;
+      const unitField = unitId.includes("user") ? unitId : "unit" + unitId;
       if (userData.data()?.vocab) {
         if (userData.data()?.vocab.missedIds) {
           //i- get here if no prev miss found for any unit
