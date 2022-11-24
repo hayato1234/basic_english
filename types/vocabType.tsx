@@ -37,3 +37,8 @@ export type QuestionData = {
   choices: Choice[];
   gotCorrect: boolean;
 };
+
+export type Missed = {
+  num: number;
+  point: number;
+};

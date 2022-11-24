@@ -3,6 +3,8 @@ import { Choice, QuestionData, Vocab } from "../types/vocabType";
 import { shuffle } from "./arraySort";
 import { getOneMeaningForOne } from "./getMeaning";
 
+export const MISSED_BASE_POINTS = 3;
+
 // -----------------------get choices-----------------------------------------------
 
 export const getChoices = (

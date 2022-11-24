@@ -6,9 +6,11 @@ import MultQAllUnit from "../../../components/MultQAllUnit";
 import ErrorMessage from "../../../components/ErrorMessage";
 import { getAuth } from "firebase/auth";
 import MultQ from "../../../components/MultQ";
+import MultQImprove from "../../../components/Quiz/MultQImprove";
 
 export enum Modes {
   Multiple,
+  MultipleImprove,
   MultipleAssess,
   MultipleAllUnit,
 }
@@ -17,6 +19,8 @@ const ReturnMode = ({ mode, unitId, inOrder, user }) => {
   switch (+mode) {
     case Modes.Multiple:
       return <MultQ unitId={unitId} inOrder={inOrder} user={user} />;
+    case Modes.MultipleImprove:
+      return <MultQImprove unitId={unitId} inOrder={inOrder} user={user} />;
     case Modes.MultipleAssess:
       return <MultQA />;
     case Modes.MultipleAllUnit:
@@ -31,8 +35,6 @@ const Quiz = () => {
   const { unitId, mode, inOrder } = router.query;
   const user = getAuth().currentUser;
 
-  //i- return error if unitId is not 0~5
-  // || +unitId < 0 || +unitId > UNITS.length - 1
   if (unitId === undefined) {
     return (
       <ErrorMessage

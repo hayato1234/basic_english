@@ -19,7 +19,7 @@ const VocabList = ({ vocabs, unitId }) => {
       </>
     );
   }
-  // const vocabs: Vocab[] = unitData.data().list;
+
   const initialValues = { key: "" };
   interface valuesType {
     key: string;

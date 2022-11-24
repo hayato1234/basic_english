@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useDocument } from "react-firebase-hooks/firestore";
 import { doc, updateDoc } from "firebase/firestore";
-import { Button, Col, Container, Row } from "reactstrap";
+import { Button, Col, Container, Row, Tooltip } from "reactstrap";
 
 import VocabList from "../../../components/VocabList";
 import FlashCards from "../../../components/FlashCards";
@@ -28,13 +28,13 @@ type historyProps = {
   unitId: string;
   unitTitle: string;
 };
-
 const SendHistory = ({ userUid, unitId, unitTitle }: historyProps) => {
   const [userData, userDataLoading, userDataError] = useDocument(
     doc(db, DB_USER_DATA, userUid),
     {}
   );
   const [historySent, setSent] = useState(false);
+
   if (userDataError) console.log(userDataError.message);
 
   if (!historySent) {
@@ -111,62 +111,11 @@ const RenderDetail = ({ unitId, unitData, userUid }) => {
       </Link>
       {vocab ? (
         <>
-          <h1>{`Unit ${unitId}`}</h1>
-          <hr />
-          <h2>単語帳</h2>
-
-          <FlashCards vocab={vocab} />
-
-          <hr />
-          <Row>
-            <h2>Study Modes</h2>
-          </Row>
-          <Row>
-            <Col className="m-1">
-              <Link
-                href={{
-                  pathname: "/vocabulary/quiz",
-                  query: {
-                    unitId: unitId,
-                    mode: Modes.Multiple,
-                    inOrder: false,
-                  },
-                }}
-                passHref
-              >
-                <a className={styles.linkWrapper}>
-                  <Button>4択クイズ(ランダム順番)</Button>
-                </a>
-              </Link>
-            </Col>
-          </Row>
-          <Row>
-            <Col className="m-1">
-              <Link
-                href={{
-                  pathname: "/vocabulary/quiz",
-                  query: {
-                    unitId: unitId,
-                    mode: Modes.Multiple,
-                    inOrder: true,
-                  },
-                }}
-                passHref
-              >
-                <a className={styles.linkWrapper}>
-                  <Button>4択クイズ(単語番号順)</Button>
-                </a>
-              </Link>
-            </Col>
-          </Row>
-
-          <hr />
-          <Row className="mb-2">
-            <Col>
-              <h2>単語リスト</h2>
-            </Col>
-          </Row>
-
+          <UnitDetailStructure
+            vocab={vocab}
+            unitId={unitId}
+            unitTitle={`Unit ${unitId}`}
+          />
           <VocabList vocabs={vocab} unitId={unitId} />
           {userUid && (
             <SendHistory
@@ -217,7 +166,12 @@ const RenderCustomDetail = ({ unitId, unitData, userUid }) => {
               </Link>
             </Col>
           </Row>
-          <h1>{userUnit.title}</h1>
+          <UnitDetailStructure
+            vocab={userUnit.vocabs}
+            unitId={"user" + unitId}
+            unitTitle={userUnit.title}
+          />
+          {/* <h1>{userUnit.title}</h1>
           <hr />
           <h2>単語帳</h2>
 
@@ -271,7 +225,7 @@ const RenderCustomDetail = ({ unitId, unitData, userUid }) => {
             <Col>
               <h2>単語リスト</h2>
             </Col>
-          </Row>
+          </Row> */}
 
           <VocabList unitId={unitId} vocabs={userUnit.vocabs} />
 
@@ -308,6 +262,137 @@ const CustomUnitDetail = ({ unitId, user }) => {
         />
       ) : (
         <p>Error {userUnitsDataError?.message}</p>
+      )}
+    </>
+  );
+};
+
+const UnitDetailStructure = ({ vocab, unitId, unitTitle }) => {
+  const [tooltipOpen, setTooltipOpen] = useState({
+    improve: false,
+    simple: false,
+  });
+
+  const toggleTooltip = (field: string) =>
+    setTooltipOpen({ ...tooltipOpen, [field]: !tooltipOpen[field] });
+  return (
+    <>
+      {vocab ? (
+        <>
+          <h1>{unitTitle}</h1>
+          <hr />
+          <h2>単語帳</h2>
+
+          <FlashCards vocab={vocab} />
+
+          <hr />
+          <Row>
+            <h2>Study Modes</h2>
+          </Row>
+          <Row>
+            <h4>
+              Improve Mode (4択クイズ){" "}
+              <i
+                id="hintImprove"
+                className="fa fa-question-circle-o"
+                aria-hidden="true"
+              />
+            </h4>
+            <Tooltip
+              isOpen={tooltipOpen.improve}
+              target="hintImprove"
+              toggle={() => toggleTooltip("improve")}
+            >
+              過去に間違えた単語が出やすい
+            </Tooltip>
+          </Row>
+          <Row className="mb-2">
+            {getAuth().currentUser ? (
+              <Col xs="5" md="3" lg="2" className="p-2">
+                <Link
+                  href={{
+                    pathname: "/vocabulary/quiz",
+                    query: {
+                      unitId: unitId,
+                      mode: Modes.MultipleImprove,
+                      inOrder: false,
+                    },
+                  }}
+                  passHref
+                >
+                  <a className={styles.linkWrapper}>
+                    <Button>カスタム順</Button>
+                  </a>
+                </Link>
+              </Col>
+            ) : (
+              <p>Login to use the improve mode</p>
+            )}
+          </Row>
+          <Row>
+            <h4>
+              Simple Mode (4択クイズ){" "}
+              <i
+                id="hintSimple"
+                className="fa fa-question-circle-o"
+                aria-hidden="true"
+              />
+            </h4>
+            <Tooltip
+              isOpen={tooltipOpen.simple}
+              target="hintSimple"
+              toggle={() => toggleTooltip("simple")}
+            >
+              過去にデータに関係なく出題
+            </Tooltip>
+          </Row>
+          <Row>
+            <Col xs="5" md="3" lg="2" className="p-2">
+              <Link
+                href={{
+                  pathname: "/vocabulary/quiz",
+                  query: {
+                    unitId: unitId,
+                    mode: Modes.Multiple,
+                    inOrder: false,
+                  },
+                }}
+                passHref
+              >
+                <a className={styles.linkWrapper}>
+                  <Button>ランダム順番</Button>
+                </a>
+              </Link>
+            </Col>
+            <Col xs="5" md="3" lg="2" className="p-2">
+              <Link
+                href={{
+                  pathname: "/vocabulary/quiz",
+                  query: {
+                    unitId: unitId,
+                    mode: Modes.Multiple,
+                    inOrder: true,
+                  },
+                }}
+                passHref
+              >
+                <a className={styles.linkWrapper}>
+                  <Button>単語番号順</Button>
+                </a>
+              </Link>
+            </Col>
+          </Row>
+          <Row></Row>
+
+          <hr />
+          <Row className="mb-2">
+            <Col>
+              <h2>単語リスト</h2>
+            </Col>
+          </Row>
+        </>
+      ) : (
+        <h1>Error Loading</h1>
       )}
     </>
   );

@@ -22,6 +22,8 @@ import Link from "next/link";
 import QuizFooter from "./QuizFooter";
 import QuizHeader from "./QuizHeader";
 
+const styles = require("../styles/Vocab.module.css");
+
 /* -------------------------------------------------- render with user -------------------------------------- */
 const RenderQuizWithUser = ({ vocabsData, inOrder, unitId, currUser }) => {
   const [userData, userDataLoading, userDataError] = useDocument(
@@ -66,6 +68,7 @@ const RenderQuizWithUser = ({ vocabsData, inOrder, unitId, currUser }) => {
       //- checking if user's got correct
       if (userChoice === answer.meaning) {
         isCorrect = true;
+        currUser && removeFromMissed(currentVocab.num);
       } else {
         currUser && uploadMissedVocab(currentVocab.num);
       }
@@ -90,6 +93,36 @@ const RenderQuizWithUser = ({ vocabsData, inOrder, unitId, currUser }) => {
   };
   // -----------------------check answer-----------------------------------------------
 
+  // -----------------------remove from missed-----------------------------------------------
+  const removeFromMissed = async (vocabId: number) => {
+    if (!userDataLoading && userData) {
+      if (userData.data()?.vocab) {
+        if (userData.data()?.vocab.missedIds) {
+          //i- get here if prev miss data found
+          const unitField = unitId.includes("user") ? unitId : "unit" + unitId;
+          let missedIds: number[] = userData.data()?.vocab.missedIds[unitField];
+          if (missedIds) {
+            //i- get here if prev miss found for this unit
+            if (missedIds.includes(vocabId)) {
+              //i- get here if the word doesn't exist in the missedIds => add it
+              missedIds = missedIds.filter((id: number) => id !== vocabId);
+              // console.log(missedIds, vocabId);
+              await updateDoc(doc(db, DB_USER_DATA, currUser.uid), {
+                vocab: {
+                  ...userData.data()?.vocab,
+                  missedIds: {
+                    ...userData.data()?.vocab.missedIds,
+                    [unitField]: [...missedIds],
+                  },
+                },
+              });
+            }
+          }
+        }
+      }
+    }
+  };
+
   // -----------------------upload missed-----------------------------------------------
   const uploadMissedVocab = async (vocabId: number) => {
     if (userDataError) console.log(userDataError.message);
@@ -99,26 +132,30 @@ const RenderQuizWithUser = ({ vocabsData, inOrder, unitId, currUser }) => {
       userData.data() !== undefined
     ) {
       const unitField = unitId.includes("user") ? unitId : "unit" + unitId;
+      // const missedData: Missed = { num: vocabId, point: MISSED_BASE_POINTS };
       if (userData.data()?.vocab) {
         if (userData.data()?.vocab.missedIds) {
-          //i- get here if no prev miss found for any unit
-          if (userData.data()?.vocab.missedIds[unitField]) {
-            //i- get here if no prev miss found for this unit
-            currUser &&
-              (await updateDoc(doc(db, DB_USER_DATA, currUser.uid), {
+          //i- get here if prev miss data found
+          const missedIds = userData.data()?.vocab.missedIds[unitField];
+          if (missedIds) {
+            //i- get here if prev miss found for this unit
+            // const missedIds = userData.data()?.vocab.missedIds[unitField];
+            // console.log(missedIds, vocabId);
+            if (!missedIds.includes(vocabId)) {
+              //i- get here if the word doesn't exist in the missedIds => add it
+              // console.log("new missed");
+              await updateDoc(doc(db, DB_USER_DATA, currUser.uid), {
                 vocab: {
                   ...userData.data()?.vocab,
                   missedIds: {
                     ...userData.data()?.vocab.missedIds,
-                    [unitField]: [
-                      ...userData.data()?.vocab.missedIds[unitField],
-                      vocabId,
-                    ],
+                    [unitField]: [...missedIds, vocabId],
                   },
                 },
-              }));
+              });
+            }
           } else {
-            //i- get here if first miss for this unit
+            //i- get here if first time missing for this unit
             currUser &&
               (await updateDoc(doc(db, DB_USER_DATA, currUser.uid), {
                 vocab: {
@@ -131,7 +168,7 @@ const RenderQuizWithUser = ({ vocabsData, inOrder, unitId, currUser }) => {
               }));
           }
         } else {
-          //i- get here if vocab field exists but no missedIds at all
+          //i- get here if user vocab field exists but no missedIds at all
           currUser &&
             (await updateDoc(doc(db, DB_USER_DATA, currUser.uid), {
               vocab: {
@@ -143,7 +180,7 @@ const RenderQuizWithUser = ({ vocabsData, inOrder, unitId, currUser }) => {
             }));
         }
       } else {
-        //i- get here if vocab field doesn't exist at all
+        //i- get here if user vocab field doesn't exist at all
         currUser &&
           (await updateDoc(doc(db, DB_USER_DATA, currUser.uid), {
             vocab: {
@@ -157,15 +194,16 @@ const RenderQuizWithUser = ({ vocabsData, inOrder, unitId, currUser }) => {
   };
   // -----------------------upload missed-----------------------------------------------
 
+  // -----------------------set up vocab data-----------------------------------------------
   let vocabs: Vocab[] = [];
+
   if (unitId.includes("user")) {
     const units: CustomUnit[] = Object.values(vocabsData.data());
     const unit = units.filter(
       (unit: CustomUnit) => +unit.id === +unitId.slice(4)
     );
     if (unit) {
-      vocabs = unit[0].vocabs;
-      if (vocabs.length < 4)
+      if (!unit[0] || !unit[0].vocabs || unit[0].vocabs.length < 4) {
         return (
           <ErrorMessage
             message="You need to add more than 4 words in this unit to take the
@@ -173,20 +211,35 @@ const RenderQuizWithUser = ({ vocabsData, inOrder, unitId, currUser }) => {
             backURL={`/vocabulary/${unitId}`}
           />
         );
+      } else {
+        vocabs = inOrder ? unit[0].vocabs : shuffle(unit[0].vocabs);
+      }
     }
   } else {
-    vocabs = vocabsData.data().list;
+    if (!userDataLoading) {
+      if (userData && userData.data()?.vocab) {
+        vocabs = inOrder
+          ? vocabsData.data().list
+          : shuffle(vocabsData.data().list);
+      }
+    }
   }
-  const defaultNumOfQs = Math.min(20, vocabs.length);
+
+  // -----------------------set up vocab data----------------------------------------------- //
+
+  const defaultNumOfQs = vocabs ? Math.min(20, vocabs.length) : 0;
 
   return (
-    <QuizStructure
-      unitId={unitId}
-      defaultNumOfQs={defaultNumOfQs}
-      vocabs={vocabs}
-      checkAnswer={checkAnswer}
-      inOrder={inOrder}
-    />
+    <>
+      {!userDataLoading && vocabs.length > 0 && (
+        <QuizStructure
+          unitId={unitId}
+          defaultNumOfQs={defaultNumOfQs}
+          vocabs={vocabs}
+          checkAnswer={checkAnswer}
+        />
+      )}
+    </>
   );
 };
 /* ------------------------------------------------------------- render with user -------------------------------------- */
@@ -255,23 +308,21 @@ const RenderQuizWithoutUser = ({ vocabsData, inOrder, unitId }) => {
       defaultNumOfQs={20}
       vocabs={vocabsData.data().list}
       checkAnswer={checkAnswer}
-      inOrder={inOrder}
     />
   );
 };
 /* ---------------------------------------------- render without user ----------------------------------------------------- */
 
 /* ---------------------------------------------- quiz structure ----------------------------------------------------- */
-const QuizStructure = ({
+export const QuizStructure = ({
   unitId,
   defaultNumOfQs,
   vocabs,
   checkAnswer,
-  inOrder,
 }) => {
   const [vocab, setVocab] = useState(vocabs);
   const [currentId, setCurrentId] = useState(0);
-  const [currentVocab, setCurrentVocab] = useState(vocabs[0]);
+  const [currentVocab, setCurrentVocab] = useState(vocab[currentId]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [choices, setChoices] = useState<Choice[]>([]);
   const [userChoices, setUserChoices] = useState<QuestionData[]>([]);
@@ -283,10 +334,8 @@ const QuizStructure = ({
   const [showNext, setShowNext] = useState(false);
 
   useEffect(() => {
-    if (vocabs) {
-      if (!inOrder) setVocab(shuffle(vocabs));
-    }
-  }, [inOrder, vocabs]);
+    setVocab(vocabs);
+  }, [vocabs]);
 
   useEffect(() => {
     setCurrentVocab(vocab[currentId]);
@@ -328,7 +377,7 @@ const QuizStructure = ({
     };
     // -----------------------making multiple choices-----------------------------------------------
 
-    setChoices(getChoices());
+    if (currentVocab) setChoices(getChoices());
   }, [currentVocab]);
 
   const goNext = () => {
@@ -367,44 +416,49 @@ const QuizStructure = ({
         maxNumOfQs={vocab.length}
       />
 
-      <h1>{currentVocab.en}</h1>
-      <List type="unstyled">
-        {choices.map((meaning) => (
-          <li key={meaning.meaning} className="m-2">
-            <Button
-              color={
-                showAnswer //- color green if correct, gray if incorrect, red if incorrect && user selected
-                  ? meaning.correct
-                    ? "success"
-                    : userChoices.at(-1)?.userChoice === meaning.meaning
-                    ? "danger"
-                    : "second"
-                  : "primary"
-              }
-              outline
-              disabled={showAnswer}
-              onClick={(e) =>
-                checkAnswer(
-                  e,
-                  meaning.meaning,
-                  choices,
-                  currentId,
-                  currentVocab,
-                  setUserChoices,
-                  userChoices,
-                  setShowAnswer,
-                  numOfQs,
-                  setShowNext
-                )
-              }
-            >
-              {showAnswer && meaning.correct && <span>o</span>}
-              {showAnswer && !meaning.correct && <span>x</span>}
-              {` ${meaning.meaning}`}
-            </Button>
-          </li>
-        ))}
-      </List>
+      {currentVocab && (
+        <>
+          <h1>{currentVocab.en}</h1>
+          <List type="unstyled">
+            {choices.map((meaning) => (
+              <li key={meaning.meaning} className="m-2">
+                <Button
+                  color={
+                    showAnswer //- color green if correct, gray if incorrect, red if incorrect && user selected
+                      ? meaning.correct
+                        ? "success"
+                        : userChoices.at(-1)?.userChoice === meaning.meaning
+                        ? "danger"
+                        : "second"
+                      : "primary"
+                  }
+                  outline
+                  disabled={showAnswer}
+                  onClick={(e) =>
+                    checkAnswer(
+                      e,
+                      meaning.meaning,
+                      choices,
+                      currentId,
+                      currentVocab,
+                      setUserChoices,
+                      userChoices,
+                      setShowAnswer,
+                      numOfQs,
+                      setShowNext
+                    )
+                  }
+                >
+                  {showAnswer && meaning.correct && <span>o</span>}
+                  {showAnswer && !meaning.correct && <span>x</span>}
+                  {` ${meaning.meaning}`}
+                </Button>
+              </li>
+            ))}
+          </List>
+        </>
+      )}
+
       <QuizFooter
         currentId={currentId}
         showNext={showNext}
@@ -460,9 +514,11 @@ const QuizStructure = ({
             Try Again
           </Button>{" "}
           <Link href="/vocabulary/[unit]" as={`/vocabulary/${unitId}`} passHref>
-            <Button color="secondary" onClick={toggleModal}>
-              End
-            </Button>
+            <a className={styles.linkWrapper}>
+              <Button color="secondary" onClick={toggleModal}>
+                End
+              </Button>
+            </a>
           </Link>
         </ModalFooter>
       </Modal>
@@ -474,15 +530,12 @@ const QuizStructure = ({
 
 /* ---------------------------------------------- quiz main component ----------------------------------------------------- */
 
-const MultQ = ({
-  unitId,
-  inOrder,
-  user,
-}: {
+type propType = {
   unitId: string;
   inOrder: boolean;
   user: User;
-}) => {
+};
+const MultQ = ({ unitId, inOrder, user }: propType) => {
   const [vocabsData, vocabLoading] = useDocument(
     unitId.includes("user")
       ? doc(db, DB_USER_VOCAB, user.uid)

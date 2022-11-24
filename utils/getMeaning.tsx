@@ -5,7 +5,8 @@ export const getMeaningsForOne = (vocab: Vocab) => {
   const meanings: { part: string; meaning: string }[] = [];
 
   for (const part of PARTS_LIST) {
-    if (vocab[part]) meanings.push({ part: part, meaning: vocab[part] });
+    if (vocab && vocab[part])
+      meanings.push({ part: part, meaning: vocab[part] });
   }
 
   return meanings;
