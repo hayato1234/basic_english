@@ -98,7 +98,11 @@ const Header = () => {
                     </NavLink>
                   </Link>
                   <hr />
-                  <a role="button" onClick={() => signOut(getAuth())} href="#/">
+                  <a
+                    role="button"
+                    onClick={() => signOut(getAuth())}
+                    href="javascript:void(0);"
+                  >
                     <i className="fa fa-sign-out" aria-hidden="true" /> Logout
                   </a>
                 </PopoverBody>

@@ -1,8 +1,12 @@
 import { getAuth } from "firebase/auth";
+import { doc } from "firebase/firestore";
 import React from "react";
 import { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { useDocument } from "react-firebase-hooks/firestore";
 import { Button, Col, Container, Row } from "reactstrap";
+import { createUserData, db } from "../utils/initAuth";
+import { DB_USER_DATA } from "../utils/staticValues";
 
 const styles = require("../styles/Grammar.module.css");
 
@@ -16,6 +20,18 @@ const choices: string[] = [
   "will help",
 ];
 const blank: String = "________";
+
+const Questions = ({ user }) => {
+  const [userData, userDataLoading, userDataError] = useDocument(
+    doc(db, DB_USER_DATA, user.uid),
+    {}
+  );
+  if (!userDataLoading && !userData?.data()) {
+    //if userData not loading and userData not found, make one
+    createUserData(user);
+  }
+  return <></>;
+};
 
 const LearningPage = () => {
   const [user, loading, error] = useAuthState(getAuth());
@@ -54,6 +70,7 @@ const LearningPage = () => {
       <Container>
         {loading ? null : user ? (
           <>
+            <Questions user={user} />
             <Row>
               <h1>Under development - 開発中</h1>
             </Row>

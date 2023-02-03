@@ -17,7 +17,7 @@ import {
 import { useCollection, useDocument } from "react-firebase-hooks/firestore";
 import { collection, deleteField, doc, updateDoc } from "firebase/firestore";
 
-import { db } from "../utils/initAuth";
+import { createUserData, db } from "../utils/initAuth";
 import { CustomUnit, Vocab } from "../types/vocabType";
 import Link from "next/link";
 import {
@@ -239,6 +239,11 @@ const CustomUnitTiles = ({ user }: { user: User }) => {
     doc(db, DB_USER_VOCAB, user.uid),
     {}
   );
+
+  if (!userUnitsDataLoading && !userUnitsData?.data()) {
+    //if userData not loading and userData not found, make one
+    createUserData(user);
+  }
   const moveUpUnits = useSpring({
     to: { opacity: 1, transform: "translateY(0px)" },
     from: {

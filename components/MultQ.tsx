@@ -30,6 +30,7 @@ const RenderQuizWithUser = ({ vocabsData, inOrder, unitId, currUser }) => {
     doc(db, DB_USER_DATA, currUser.uid),
     {}
   );
+  // console.log(vocabsData.data());
 
   if (!vocabsData.data())
     return (
@@ -198,6 +199,7 @@ const RenderQuizWithUser = ({ vocabsData, inOrder, unitId, currUser }) => {
   let vocabs: Vocab[] = [];
 
   if (unitId.includes("user")) {
+    //this is a unit made by the user
     const units: CustomUnit[] = Object.values(vocabsData.data());
     const unit = units.filter(
       (unit: CustomUnit) => +unit.id === +unitId.slice(4)
@@ -216,7 +218,9 @@ const RenderQuizWithUser = ({ vocabsData, inOrder, unitId, currUser }) => {
       }
     }
   } else {
+    //this is a preset unit
     if (!userDataLoading) {
+      console.log("user data", userData?.data());
       if (userData && userData.data()?.vocab) {
         vocabs = inOrder
           ? vocabsData.data().list
@@ -231,13 +235,15 @@ const RenderQuizWithUser = ({ vocabsData, inOrder, unitId, currUser }) => {
 
   return (
     <>
-      {!userDataLoading && vocabs.length > 0 && (
+      {!userDataLoading && vocabs.length > 0 ? (
         <QuizStructure
           unitId={unitId}
           defaultNumOfQs={defaultNumOfQs}
           vocabs={vocabs}
           checkAnswer={checkAnswer}
         />
+      ) : (
+        <p>{vocabs.length}</p>
       )}
     </>
   );
@@ -252,8 +258,10 @@ const RenderQuizWithoutUser = ({ vocabsData, inOrder, unitId }) => {
       <ErrorMessage message="unexpected error happened" backURL="/vocabulary" />
     );
 
-  if (vocabsData.data().list)
-    return <ErrorMessage message="error loading" backURL="/vocabulary" />;
+  if (!vocabsData.data().list)
+    return (
+      <ErrorMessage message="error loading the list" backURL="/vocabulary" />
+    );
 
   // -----------------------check answer-----------------------------------------------
   const checkAnswer = (

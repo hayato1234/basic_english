@@ -16,7 +16,7 @@ import { doc } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useDocument } from "react-firebase-hooks/firestore";
 
-import { db } from "../utils/initAuth";
+import { createUserData, db } from "../utils/initAuth";
 import { DB_USER_DATA, STUDY_TITLES } from "../utils/staticValues";
 import SignInScreen from "../components/FirebaseAuth";
 import Link from "next/link";
@@ -30,6 +30,11 @@ const RecentStudies = ({ user }) => {
     doc(db, DB_USER_DATA, user.uid),
     {}
   );
+
+  if (!userDataLoading && !userData?.data()) {
+    //if userData not loading and userData not found, make one
+    createUserData(user);
+  }
 
   const recentCards: ReactNode[] = [];
   const moveUpRecent = useSpring({

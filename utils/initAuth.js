@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { DB_USER_DATA } from "../utils/staticValues";
 // import { enableIndexedDbPersistence } from "firebase/firestore";
 
 const clientCredential = {
@@ -35,6 +36,10 @@ export const addNewUnit = async () => {
   } else {
     console.log("user need to login");
   }
+};
+
+export const createUserData = async (user) => {
+  await setDoc(doc(db, DB_USER_DATA, user.uid), { history: [], vocab: {} });
 };
 
 export default app;
