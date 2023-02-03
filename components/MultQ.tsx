@@ -220,7 +220,6 @@ const RenderQuizWithUser = ({ vocabsData, inOrder, unitId, currUser }) => {
   } else {
     //this is a preset unit
     if (!userDataLoading) {
-      console.log("user data", userData?.data());
       if (userData && userData.data()?.vocab) {
         vocabs = inOrder
           ? vocabsData.data().list
@@ -310,11 +309,17 @@ const RenderQuizWithoutUser = ({ vocabsData, inOrder, unitId }) => {
   };
   // -----------------------check answer-----------------------------------------------
 
+  // ---------- change order if random-------
+  let vocabs: Vocab[] = inOrder
+    ? vocabsData.data().list
+    : shuffle(vocabsData.data().list);
+  // ---------- change order if random-------
+
   return (
     <QuizStructure
       unitId={unitId}
       defaultNumOfQs={20}
-      vocabs={vocabsData.data().list}
+      vocabs={vocabs}
       checkAnswer={checkAnswer}
     />
   );

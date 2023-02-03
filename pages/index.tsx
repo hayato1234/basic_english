@@ -145,14 +145,14 @@ const Home = () => {
                   <Card className={styles.card}>
                     <CardHeader>{`Add vocabulary`}</CardHeader>
                     <CardBody>
-                      <CardTitle tag="h6">準備中</CardTitle>
-                      <CardText>"準備中"</CardText>
+                      <CardTitle tag="h6">Add vocabulary</CardTitle>
+                      <CardText>自分専用の単語を追加</CardText>
                     </CardBody>
                   </Card>
                 </a>
               </Link>
             ) : (
-              <Card>
+              <Card className={styles.card}>
                 <CardHeader>{`Add vocabulary`}</CardHeader>
                 <CardBody>
                   <CardTitle tag="h6">Login in to add vocabulary</CardTitle>
