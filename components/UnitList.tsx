@@ -268,7 +268,7 @@ const CustomUnitTiles = ({ user }: { user: User }) => {
           </Col>
           {userUnitsDataLoading ? (
             <p>Loading</p>
-          ) : userUnitsData ? (
+          ) : userUnitsData && userUnitsData.data() ? (
             <RenderCustomUnit
               unitData={userUnitsData.data()}
               userId={user.uid}
