@@ -129,7 +129,7 @@ const RenderQuiz = ({ originalVocabs }) => {
         currentId={currentId}
         numOfQs={numOfQs}
         setNumOfQs={setNumOfQs}
-        maxNumOfQs={vocabs.length}
+        maxNumOfQs={vocabs.reduce((a, c) => a + c.length, 0)} //vocabs have 6 units
       />
       <h1>{currentVocab.en}</h1>
       <List type="unstyled">
