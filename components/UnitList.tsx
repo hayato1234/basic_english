@@ -416,17 +416,19 @@ const UnitList = ({ user }: { user: User | null }) => {
           {user ? (
             <CustomUnitTiles user={user} />
           ) : (
-            <Col sm="6" md="4" lg="3">
-              <Card className={styles.card}>
-                <CardHeader>Add your vocabulary</CardHeader>
-                <CardBody>
-                  <CardTitle tag="h6">Login to add vocabulary</CardTitle>
-                  <CardText>
-                    "新しい単語を足すためにはログインしてください"
-                  </CardText>
-                </CardBody>
-              </Card>
-            </Col>
+            <animated.div style={moveUp}>
+              <Col sm="6" md="4" lg="3">
+                <Card className={styles.card}>
+                  <CardHeader>Add your vocabulary</CardHeader>
+                  <CardBody>
+                    <CardTitle tag="h6">Login to add vocabulary</CardTitle>
+                    <CardText>
+                      "新しい単語を足すためにはログインしてください"
+                    </CardText>
+                  </CardBody>
+                </Card>
+              </Col>
+            </animated.div>
           )}
         </>
       ) : (
