@@ -417,7 +417,7 @@ const UnitList = ({ user }: { user: User | null }) => {
             <CustomUnitTiles user={user} />
           ) : (
             <Col sm="6" md="4" lg="3">
-              <Card>
+              <Card className={styles.card}>
                 <CardHeader>Add your vocabulary</CardHeader>
                 <CardBody>
                   <CardTitle tag="h6">Login to add vocabulary</CardTitle>
